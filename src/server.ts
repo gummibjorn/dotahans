@@ -49,6 +49,40 @@ app.use(lusca.xframe("SAMEORIGIN"));
 app.use(lusca.xssProtection(true));
 app.use(express.static(path.join(__dirname, "public"), { maxAge: 31557600000 }));
 
+gameManager = new GameManager();
+analysis = new Analysis(gameManager);
+messageSender = new MessageSender(analysis, messageMatchMap);
+
+updateGame(req, res) {
+    gameManager.onGameUpdate(transfromToGameStateIntegrationMessage(req.body));
+    res.ok();
+}
+
+telegramBot.onUpdate(({messageId: string, bonus: any}) => {
+    const matchId = messageSender.getMatchId(messageId)
+    analysis.botUpdate(matchId, bonus)
+
+})
+
+//poller
+Set<MatchId> matches;
+setInterval(
+    config.players.forEach(p => {
+        match = dotaApi.getLastMatch(p);
+        if (!matches.contains(match)) {
+            matches.add(match.id)
+            gameManager.onGameFinished(transformToGameFInishMessage(match))
+        }
+    });
+}
+
+
+    })
+
+60000)
+
+
+app.post("/gamestate", (req, res) => gameManager.onGameUpdate(req.toJson()))
 /**
  * Primary app routes.
  */

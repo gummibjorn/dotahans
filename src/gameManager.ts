@@ -1,5 +1,6 @@
 import {Request, Response} from "express";
 import {Subject} from "rxjs/Subject";
+import {DotaAPIMatchMessage, Game, GameStateIntegrationMessage} from "./hans.types";
 
 /**
  * GET /
@@ -11,19 +12,6 @@ export let index = (req: Request, res: Response) => {
   });
 };
 
-export class Game {
-  private matchId: number;
-}
-
-//received via http from dota clients
-class GameStateIntegrationMessage {
-
-}
-
-//inserted from the poller, when it detected a finished game from the dota api
-class DotaAPIMatchMessage {
-
-}
 
 export class GameManager {
 

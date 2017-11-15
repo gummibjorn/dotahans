@@ -1,13 +1,7 @@
-import {Game, GameManager} from "./gameManager";
+import {GameManager} from "./gameManager";
 import {Subject} from "rxjs/Subject";
+import {Analysis, AnalysisTypeEnum, Game, MatchId} from "./hans.types";
 
-type MatchId = string;
-
-enum AnalysisTypeEnum {
-  WHOWON
-}
-
-export type Analysis = Map<AnalysisTypeEnum, any>;
 
 export class AnalysisMaker {
 

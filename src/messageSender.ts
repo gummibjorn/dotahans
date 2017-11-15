@@ -1,8 +1,5 @@
-import {Analysis, AnalysisMaker} from "./analysis";
-
-class TelegramMessage {
-
-}
+import {AnalysisMaker} from "./analysis";
+import {Analysis, TelegramMessage} from "./hans.types";
 
 export class MessageSender {
 

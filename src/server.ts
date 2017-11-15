@@ -53,13 +53,13 @@ app.use(express.static(path.join(__dirname, "public"), { maxAge: 31557600000 }))
  * Hans
  */
 import {AnalysisMaker} from "./analysis";
-import {GameManager} from "./gameManager";
+import {MatchManager} from "./matchManager";
 import {MessageSender} from "./messageSender";
 
 const messageMatchMap: any = {};
 const telegramAPI: any = {};
 
-const matchManager = new GameManager();
+const matchManager = new MatchManager();
 const analysisMaker = new AnalysisMaker(matchManager);
 const messageSender = new MessageSender(analysisMaker, messageMatchMap, telegramAPI);
 

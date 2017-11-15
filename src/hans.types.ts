@@ -1,4 +1,4 @@
-export class Game {
+export class Match {
   private matchId: number;
 }
 

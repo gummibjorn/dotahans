@@ -1,4 +1,5 @@
 import {Request, Response} from "express";
+import {Subject} from "rxjs/Subject";
 
 /**
  * GET /
@@ -10,7 +11,7 @@ export let index = (req: Request, res: Response) => {
   });
 };
 
-class Game {
+export class Game {
   private matchId: number;
 }
 
@@ -27,26 +28,28 @@ class DotaAPIMatchMessage {
 export class GameManager {
 
   private games: Map<number, Game>;
-  endOfGame: Subject<Game>;
+  endOfGame: Subject<Game> = new Subject();
   startOfGame: Subject<Game>;
 
   onGameFinished(message: DotaAPIMatchMessage) {
-    if (!gameExists(message)) {
+    const game: Game = new Game();
+    if (!this.gameExists(game)) {
       //add game to map
     }
     //trigger end of game event
-    this.endOfGameEvent.next(game);
+    this.endOfGame.next(game);
   }
 
   onGameUpdate(message: GameStateIntegrationMessage) {
-
-    if (!gameExists(message)) {
+    const game: Game = new Game();
+    if (!this.gameExists(game)) {
       //add game to map
       //trigger new game event
     }
-
     //store message in game
   }
 
-
+  private gameExists(game: Game): boolean {
+    return false;
+  }
 }

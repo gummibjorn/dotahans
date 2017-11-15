@@ -49,10 +49,21 @@ app.use(lusca.xframe("SAMEORIGIN"));
 app.use(lusca.xssProtection(true));
 app.use(express.static(path.join(__dirname, "public"), { maxAge: 31557600000 }));
 
-gameManager = new GameManager();
-analysis = new Analysis(gameManager);
-messageSender = new MessageSender(analysis, messageMatchMap);
+/*
+ * Hans
+ */
+import {AnalysisMaker} from "./analysis";
+import {GameManager} from "./gameManager";
+import {MessageSender} from "./messageSender";
 
+const messageMatchMap: any = {};
+const telegramAPI: any = {};
+
+const matchManager = new GameManager();
+const analysisMaker = new AnalysisMaker(matchManager);
+const messageSender = new MessageSender(analysisMaker, messageMatchMap, telegramAPI);
+
+/*
 updateGame(req, res) {
     gameManager.onGameUpdate(transfromToGameStateIntegrationMessage(req.body));
     res.ok();
@@ -62,9 +73,10 @@ telegramBot.onUpdate(({messageId: string, bonus: any}) => {
     const matchId = messageSender.getMatchId(messageId)
     analysis.botUpdate(matchId, bonus)
 
-})
+})*/
 
 //poller
+/*
 Set<MatchId> matches;
 setInterval(
     config.players.forEach(p => {
@@ -74,15 +86,12 @@ setInterval(
             gameManager.onGameFinished(transformToGameFInishMessage(match))
         }
     });
-}
+} }) 60000)
+*/
 
 
-    })
+//app.post("/gamestate", (req, res) => gameManager.onGameUpdate(req.toJson()))
 
-60000)
-
-
-app.post("/gamestate", (req, res) => gameManager.onGameUpdate(req.toJson()))
 /**
  * Primary app routes.
  */

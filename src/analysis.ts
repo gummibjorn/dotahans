@@ -1,42 +1,47 @@
-import {GameManager} from "./gameManager";
+import {Game, GameManager} from "./gameManager";
+import {Subject} from "rxjs/Subject";
 
 type MatchId = string;
 
-type Analysis = Map<AnalysisTypeEnum, any>;
+enum AnalysisTypeEnum {
+  WHOWON
+}
 
-class AnalysisMaker {
+export type Analysis = Map<AnalysisTypeEnum, any>;
 
+export class AnalysisMaker {
+
+  complete: Subject<Analysis> = new Subject();
   private analysis: Map<MatchId, Analysis>;
-  complete: Subject<Analysis>;
 
   constructor(gameManager: GameManager) {
     gameManager.endOfGame.subscribe(game => {
+      this.startSyncAnalysis(game);
       //sync analysis
       //aysnc analyse
     });
   }
 
-  startSyncAnalysis() {
-    const analyzers = [new WhoWonAnalyzer()];
-    const analysis = new Map();
+  private startSyncAnalysis(game: Game) {
+    const analyzers: Analyzer[] = [new DetermineWhoWonAnalyzer()];
+    const analyse = new Map<AnalysisTypeEnum, any>();
     analyzers.forEach(analyzer => {
-      analysis[analyzer.getType()] = analyzer.analyze(game);
+      analyse[analyzer.analysisType] = analyzer.analyze(game);
     });
-    complete.next(analysis);
+    this.complete.next(analyse);
   }
-
 }
 
 interface Analyzer {
-  getType(): string
+  analysisType: AnalysisTypeEnum;
 
-  analyze(matchInfo: Game): Analysis
+  analyze(matchInfo: Game): any;
 }
 
 class DetermineWhoWonAnalyzer implements Analyzer {
-  getType() => 'determineWhoWon';
+  analysisType = AnalysisTypeEnum.WHOWON;
 
-  analyzer(matchInfo: Game): WhoWonAnalysis {
-
+  analyze(matchInfo: Game): any {
+    return undefined;
   }
 }

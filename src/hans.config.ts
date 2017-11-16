@@ -1,4 +1,4 @@
-export class Config {
+export class HansConfig {
   static players: Array<Account> = [{name: "Mario", account_id: 56706937}];
 }
 

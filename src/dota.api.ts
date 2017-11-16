@@ -1,7 +1,6 @@
 import {Observable} from "rxjs/Observable";
-import {Match} from "./dota-api";
+import {DotaApiMatchResult, Match} from "./dota-api";
 import * as request from "request";
-import {DotaAPIMatchMessage} from "./hans.types";
 
 export class DotaApi {
 
@@ -20,7 +19,7 @@ export class DotaApi {
     });
   }
 
-  getMatchDetails(matchId: number): Observable<DotaAPIMatchMessage> {
+  getMatchDetails(matchId: number): Observable<DotaApiMatchResult> {
     const requestProps = {key: process.env.STEAM_API_KEY, match_id: matchId};
     return Observable.create(observable => {
       request.get({url: this.API_URL_MATCH_DETAIL, qs: requestProps}, (err, response, body) => {

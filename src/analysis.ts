@@ -1,6 +1,8 @@
 import {MatchManager} from "./matchManager";
 import {Subject} from "rxjs/Subject";
-import {Analysis, AnalysisTypeEnum, Match, MatchId} from "./hans.types";
+import {Analysis, AnalysisTypeEnum, Analyzer, MatchId} from "./hans.types";
+import {DotaApiMatchResult} from "./dota-api";
+import {DetermineWhoWonAnalyzer} from "./analyzers/determinewhowon.analyzer";
 
 
 export class AnalysisMaker {
@@ -8,34 +10,22 @@ export class AnalysisMaker {
   complete: Subject<Analysis> = new Subject();
   private analysis: Map<MatchId, Analysis>;
 
-  constructor(gameManager: MatchManager) {
-    gameManager.endOfMatch.subscribe(game => {
-      this.startSyncAnalysis(game);
+  constructor(matchManager: MatchManager) {
+    matchManager.endOfMatch.subscribe(match => {
+      this.startSyncAnalysis(match);
       //sync analysis
       //aysnc analyse
     });
   }
 
-  private startSyncAnalysis(game: Match) {
+  private startSyncAnalysis(match: DotaApiMatchResult) {
     const analyzers: Analyzer[] = [new DetermineWhoWonAnalyzer()];
-    const analyse = new Map<AnalysisTypeEnum, any>();
+    const analyse: Analysis = new Map<AnalysisTypeEnum, any>();
     analyzers.forEach(analyzer => {
-      analyse[analyzer.analysisType] = analyzer.analyze(game);
+      analyse[analyzer.analysisType] = analyzer.analyze(match);
     });
+    this.analysis.set(match.match_id, analyse);
     this.complete.next(analyse);
   }
 }
 
-interface Analyzer {
-  analysisType: AnalysisTypeEnum;
-
-  analyze(matchInfo: Match): any;
-}
-
-class DetermineWhoWonAnalyzer implements Analyzer {
-  analysisType = AnalysisTypeEnum.WHOWON;
-
-  analyze(matchInfo: Match): any {
-    return undefined;
-  }
-}

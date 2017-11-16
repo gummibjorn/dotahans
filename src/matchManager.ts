@@ -1,6 +1,7 @@
-import { Request, Response } from "express";
-import { Subject } from "rxjs/Subject";
-import { DotaAPIMatchMessage, Match, GameStateIntegrationMessage } from "./hans.types";
+import {Request, Response} from "express";
+import {Subject} from "rxjs/Subject";
+import {GameStateIntegrationMessage, MatchId} from "./hans.types";
+import {DotaApiMatchResult} from "./dota-api";
 
 /**
  * GET /
@@ -14,30 +15,23 @@ export let index = (req: Request, res: Response) => {
 
 
 export class MatchManager {
+  private matches = new Map<MatchId, DotaApiMatchResult>();
+  endOfMatch = new Subject<DotaApiMatchResult>();
+  startOfMatch = new Subject<DotaApiMatchResult>();
 
-  private matches: Map<number, Match>;
-  endOfMatch: Subject<Match> = new Subject();
-  startOfMatch: Subject<Match>;
-
-  onGameFinished(message: DotaAPIMatchMessage) {
-    const game: Match = new Match();
-    if (!this.matchExists(game)) {
-      //add game to map
+  onMatchFinished(match: DotaApiMatchResult) {
+    if (!this.matches.has(match.match_id)) {
+      this.matches.set(match.match_id, match);
     }
     //trigger end of game event
-    this.endOfMatch.next(game);
+    this.endOfMatch.next(match);
   }
 
   onGameUpdate(message: GameStateIntegrationMessage) {
-    const game: Match = new Match();
-    if (!this.matchExists(game)) {
+    if (!this.matches.has(message.match_id)) {
       //add game to map
       //trigger new game event
     }
     //store message in game
-  }
-
-  private matchExists(game: Match): boolean {
-    return false;
   }
 }

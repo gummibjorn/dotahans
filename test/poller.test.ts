@@ -5,7 +5,7 @@ import "rxjs/add/observable/of";
 import "rxjs/add/observable/empty";
 
 class MatchManagerSpy {
-  onGameFinished = jest.fn();
+  onMatchFinished = jest.fn();
 }
 
 class DotaApiStub {
@@ -28,14 +28,14 @@ describe("Poller", () => {
     poller = new Poller(matchManager, dotaApi);
   });
 
-  it("Should call onGameFinished after polling new match", () => {
+  it("Should call onMatchFinished after polling new match", () => {
     poller.poll();
-    expect(matchManager.onGameFinished.mock.calls.length).toBe(1);
+    expect(matchManager.onMatchFinished.mock.calls.length).toBe(1);
   });
 
-  it("Should call onGameFinished only once for duplicated matches", () => {
+  it("Should call onMatchFinished only once for duplicated matches", () => {
     poller.poll();
     poller.poll();
-    expect(matchManager.onGameFinished.mock.calls.length).toBe(1);
+    expect(matchManager.onMatchFinished.mock.calls.length).toBe(1);
   });
 });

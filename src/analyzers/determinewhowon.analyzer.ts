@@ -2,7 +2,7 @@ import {AnalysisTypeEnum, Analyzer} from "../hans.types";
 import {DotaApiMatchResult, Player} from "../dota-api";
 import {HansConfig} from "../hans.config";
 
-export class DetermineWhoWonAnalyzer implements Analyzer {
+export class DetermineWhoWon implements Analyzer {
   analysisType = AnalysisTypeEnum.WHOWON;
 
   analyze(matchInfo: DotaApiMatchResult): any {

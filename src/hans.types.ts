@@ -8,6 +8,7 @@ export class GameStateIntegrationMessage {
 export type MatchId = number;
 
 export enum AnalysisTypeEnum {
+  STATSTABLE,
   WHOWON
 }
 

@@ -1,12 +1,12 @@
 import {} from "jest";
-import {DetermineWhoWonAnalyzer} from "../src/analyzers/determinewhowon.analyzer";
+import {DetermineWhoWon} from "../src/analyzers/determinewhowon.analyzer";
 import {matchResult} from "./testMatchResult";
 
-describe("DetermineWhoWonAnalyzer", () => {
-  let determineWhoWonAnalyzer: DetermineWhoWonAnalyzer;
+describe("DetermineWhoWon", () => {
+  let determineWhoWonAnalyzer: DetermineWhoWon;
 
   beforeEach(() => {
-    determineWhoWonAnalyzer = new DetermineWhoWonAnalyzer();
+    determineWhoWonAnalyzer = new DetermineWhoWon();
   });
 
   it("Configured players should win", () => {

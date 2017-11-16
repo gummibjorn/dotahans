@@ -2,13 +2,13 @@ import {MatchManager} from "./matchManager";
 import {Subject} from "rxjs/Subject";
 import {Analysis, AnalysisTypeEnum, Analyzer, MatchId} from "./hans.types";
 import {DotaApiMatchResult} from "./dota-api";
-import {DetermineWhoWonAnalyzer} from "./analyzers/determinewhowon.analyzer";
-
+import {DetermineWhoWon} from "./analyzers/determinewhowon.analyzer";
+import {StatsTable} from "./analyzers/statsTable.analyzer";
 
 export class AnalysisMaker {
 
   complete: Subject<Analysis> = new Subject();
-  private analysis: Map<MatchId, Analysis>;
+  private analysis = new Map<MatchId, Analysis>();
 
   constructor(matchManager: MatchManager) {
     matchManager.endOfMatch.subscribe(match => {
@@ -19,7 +19,7 @@ export class AnalysisMaker {
   }
 
   private startSyncAnalysis(match: DotaApiMatchResult) {
-    const analyzers: Analyzer[] = [new DetermineWhoWonAnalyzer()];
+    const analyzers: Analyzer[] = [new DetermineWhoWon(), new StatsTable()];
     const analyse: Analysis = new Map<AnalysisTypeEnum, any>();
     analyzers.forEach(analyzer => {
       analyse[analyzer.analysisType] = analyzer.analyze(match);

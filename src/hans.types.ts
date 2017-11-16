@@ -12,7 +12,7 @@ export class DotaAPIMatchMessage {
 
 }
 
-export type MatchId = string;
+export type MatchId = number;
 
 export enum AnalysisTypeEnum {
   WHOWON

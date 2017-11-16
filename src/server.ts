@@ -17,7 +17,7 @@ import expressValidator = require("express-validator");
 /**
  * Load environment variables from .env file, where API keys and passwords are configured.
  */
-dotenv.config({ path: ".env.example" });
+dotenv.config({path: ".env.dev"});
 
 
 /**
@@ -40,14 +40,14 @@ app.set("view engine", "pug");
 app.use(compression());
 app.use(logger("dev"));
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.urlencoded({extended: true}));
 app.use(expressValidator());
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(flash());
 app.use(lusca.xframe("SAMEORIGIN"));
 app.use(lusca.xssProtection(true));
-app.use(express.static(path.join(__dirname, "public"), { maxAge: 31557600000 }));
+app.use(express.static(path.join(__dirname, "public"), {maxAge: 31557600000}));
 
 /*
  * Hans
@@ -55,9 +55,13 @@ app.use(express.static(path.join(__dirname, "public"), { maxAge: 31557600000 }))
 import {AnalysisMaker} from "./analysis";
 import {MatchManager} from "./matchManager";
 import {MessageSender} from "./messageSender";
+import {Poller} from "./poller";
+import {DotaApi} from "./dota.api";
 
 const messageMatchMap: any = {};
 const telegramAPI: any = {};
+const dotaApi = new DotaApi();
+
 
 const matchManager = new MatchManager();
 const analysisMaker = new AnalysisMaker(matchManager);
@@ -66,7 +70,7 @@ const messageSender = new MessageSender(analysisMaker, messageMatchMap, telegram
 /*
 updateGame(req, res) {
     gameManager.onGameUpdate(transfromToGameStateIntegrationMessage(req.body));
-    res.ok();
+    res.ok);
 }
 
 telegramBot.onUpdate(({messageId: string, bonus: any}) => {
@@ -76,18 +80,8 @@ telegramBot.onUpdate(({messageId: string, bonus: any}) => {
 })*/
 
 //poller
-/*
-Set<MatchId> matches;
-setInterval(
-    config.players.forEach(p => {
-        match = dotaApi.getLastMatch(p);
-        if (!matches.contains(match)) {
-            matches.add(match.id)
-            gameManager.onGameFinished(transformToGameFInishMessage(match))
-        }
-    });
-} }) 60000)
-*/
+const poller = new Poller(matchManager, dotaApi);
+setInterval(() => poller.poll(), 60000);
 
 
 //app.post("/gamestate", (req, res) => gameManager.onGameUpdate(req.toJson()))

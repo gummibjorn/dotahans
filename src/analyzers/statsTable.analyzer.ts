@@ -42,3 +42,4 @@ export class StatsTable implements Analyzer {
   }
 }
 
+

@@ -57,6 +57,7 @@ import {MatchManager} from "./matchManager";
 import {MessageSender} from "./messageSender";
 import {Poller} from "./poller";
 import {DotaApi} from "./dota.api";
+import {TelegramRating} from "./telegramRating";
 
 const messageMatchMap: any = {};
 const dotaApi = new DotaApi();
@@ -70,6 +71,7 @@ bot.on('message', (msg) => {
 const matchManager = new MatchManager();
 const analysisMaker = new AnalysisMaker(matchManager);
 const messageSender = new MessageSender(analysisMaker, messageMatchMap, bot);
+const telegramRating = new TelegramRating(analysisMaker, messageSender, bot)
 
 /*
 updateGame(req, res) {

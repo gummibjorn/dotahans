@@ -11,10 +11,9 @@ export type UserId = number;
 
 export enum AnalysisTypeEnum {
   STATSTABLE,
-  WHOWON
+  WHOWON,
+  RATING
 }
-
-export type Analysis = Map<AnalysisTypeEnum, any>;
 
 export class TelegramMessage {
 

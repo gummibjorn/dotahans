@@ -11,16 +11,14 @@ export const ratingOptions = [
 
 export class TelegramRating {
 
-  private chatToMatch: Map<MessageId, MatchId> = new Map();
   private matchRatings: Map<MatchId, Map<UserId, string>> = new Map();
 
   constructor(analysisMaker : AnalysisMaker, messageSender : MessageSender, bot){
-    messageSender.chatToMatchMapping.subscribe(next => this.chatToMatch = next);
 
     bot.on('callback_query', msg => {
       console.log(JSON.stringify(msg, null, 2));
       const messageId = msg.message.message_id;
-      const matchId = this.chatToMatch[messageId];
+      const matchId = messageSender.chatToMatch[messageId];
       const userId = msg.from.id;
       let matchRating = this.matchRatings[matchId];
       if(matchRating === undefined){

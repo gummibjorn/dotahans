@@ -17,8 +17,7 @@ export class MessageSender {
 
   private matchInfo: Map<MatchId, Analysis> = new Map();
   private messageInfo: Map<MatchId, MessageInfo> = new Map();
-  private chatToMatch: Map<MessageId, MatchId> = new Map();
-  chatToMatchMapping: Subject<Map<MessageId, MatchId>> = new Subject();
+  chatToMatch: Map<MessageId, MatchId> = new Map();
 
   constructor(analysisMaker: AnalysisMaker, messageMatchMap: any, private bot: any) {
     //this.sendMatchComplete(new Analysis(1))
@@ -69,7 +68,6 @@ export class MessageSender {
         reply_markup: ratingReplyMarkup
       });
       this.chatToMatch[message.message_id] = matchId;
-      this.chatToMatchMapping.next(this.chatToMatch);
       this.messageInfo[matchId] = {messageId: message.message_id, messageType: "end", chatId: message.chat.id};
     } else {
       //update existing message

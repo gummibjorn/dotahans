@@ -52,8 +52,6 @@ export class AnalysisMaker {
   public externalAnalysis(matchId: MatchId, type: AnalysisTypeEnum, data: any){
     const a = this.getAnalysis(matchId);
     a.setPart(type, data);
-    console.log("AAAA");
-    console.log(JSON.stringify(a, null, 2));
     this.complete.next(a);
   }
 

@@ -72,7 +72,10 @@ export class AnalysisMaker {
   }
 
   private startSyncAnalysis(match: DotaApiMatchResult) {
-    const analyzers: Analyzer[] = [new DetermineWhoWon(), new StatsTable()];
+    const analyzers: Analyzer[] = [
+      new DetermineWhoWon(),
+      new StatsTable()
+    ];
     const analysis: Analysis = new Analysis(match.match_id);
     analyzers.forEach(analyzer => {
       analysis.setPart(analyzer.analysisType, analyzer.analyze(match));

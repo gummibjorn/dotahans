@@ -25,3 +25,15 @@ export interface Analyzer {
 
   analyze(matchInfo: DotaApiMatchResult): any;
 }
+
+declare namespace AnalysisFormat {
+  type Rating = Map<UserId, string>
+  interface WhoWon {
+    won: boolean;
+    duration: number;
+    mode: string;
+    ranked: boolean;
+    players: string[];
+    matchId: MatchId;
+  }
+}

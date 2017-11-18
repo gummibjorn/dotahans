@@ -1,7 +1,8 @@
 import {Analysis, AnalysisMaker} from "./analysis";
-import {MessageId, MatchId, TelegramMessage, UserId, AnalysisTypeEnum} from "./hans.types";
-import {Subject} from "rxjs/Subject";
-import {potato, ratingOptions} from "./telegramRating";
+import {AnalysisTypeEnum, MatchId, MessageId} from "./hans.types";
+import {ratingOptions} from "./telegramRating";
+import * as TelegramBot from "node-telegram-bot-api";
+import {Message} from "node-telegram-bot-api";
 
 
 const makeInlineKeyboardButton = (text, callback_data) => ({text, callback_data});
@@ -19,7 +20,7 @@ export class MessageSender {
   private messageInfo: Map<MatchId, MessageInfo> = new Map();
   chatToMatch: Map<MessageId, MatchId> = new Map();
 
-  constructor(analysisMaker: AnalysisMaker, messageMatchMap: any, private bot: any) {
+  constructor(analysisMaker: AnalysisMaker, messageMatchMap: any, private bot: TelegramBot) {
     //this.sendMatchComplete(new Analysis(1))
 
     analysisMaker.complete.subscribe((message: Analysis) => {
@@ -66,7 +67,7 @@ export class MessageSender {
       //send new message
       const message = await this.bot.sendMessage(process.env.TELEGRAM_CHAT, "-> " + this.format(analysis), {
         reply_markup: ratingReplyMarkup
-      });
+      }) as Message;
       this.chatToMatch[message.message_id] = matchId;
       this.messageInfo[matchId] = {messageId: message.message_id, messageType: "end", chatId: message.chat.id};
     } else {

@@ -12,12 +12,12 @@ import * as flash from "express-flash";
 import * as path from "path";
 import * as passport from "passport";
 import expressValidator = require("express-validator");
-
+import * as TelegramBot from "node-telegram-bot-api";
 
 /**
  * Load environment variables from .env file, where API keys and passwords are configured.
  */
-dotenv.config({path: ".env.dev"});
+dotenv.config({path: ".env"});
 
 
 /**
@@ -59,13 +59,17 @@ import {Poller} from "./poller";
 import {DotaApi} from "./dota.api";
 
 const messageMatchMap: any = {};
-const telegramAPI: any = {};
 const dotaApi = new DotaApi();
 
+const bot = new TelegramBot(process.env.TELEGRAM_TOKEN, {polling: true});
+bot.on('message', (msg) => {
+  console.log(JSON.stringify(msg, null, 2));
+  bot.sendMessage(msg.chat.id,"Hello dear user");
+});
 
 const matchManager = new MatchManager();
 const analysisMaker = new AnalysisMaker(matchManager);
-const messageSender = new MessageSender(analysisMaker, messageMatchMap, telegramAPI);
+const messageSender = new MessageSender(analysisMaker, messageMatchMap, bot);
 
 /*
 updateGame(req, res) {
@@ -81,7 +85,7 @@ telegramBot.onUpdate(({messageId: string, bonus: any}) => {
 
 //poller
 const poller = new Poller(matchManager, dotaApi);
-setInterval(() => poller.poll(), 60000);
+//setInterval(() => poller.poll(), 60000);
 
 
 //app.post("/gamestate", (req, res) => gameManager.onGameUpdate(req.toJson()))

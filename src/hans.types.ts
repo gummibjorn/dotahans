@@ -26,7 +26,7 @@ export interface Analyzer {
   analyze(matchInfo: DotaApiMatchResult): any;
 }
 
-declare namespace AnalysisFormat {
+export declare namespace AnalysisFormat {
   type Rating = Map<UserId, string>
   interface WhoWon {
     won: boolean;

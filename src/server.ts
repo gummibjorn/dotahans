@@ -63,15 +63,15 @@ const messageMatchMap: any = {};
 const dotaApi = new DotaApi();
 
 const bot = new TelegramBot(process.env.TELEGRAM_TOKEN, {polling: true});
-bot.on('message', (msg) => {
-  console.log(JSON.stringify(msg, null, 2));
-  bot.sendMessage(msg.chat.id,"Hello dear user");
+bot.on("message", (msg) => {
+  console.log(JSON.stringify(msg, undefined, 2));
+  bot.sendMessage(msg.chat.id, "Hello dear user");
 });
 
 const matchManager = new MatchManager();
 const analysisMaker = new AnalysisMaker(matchManager);
 const messageSender = new MessageSender(analysisMaker, messageMatchMap, bot);
-const telegramRating = new TelegramRating(analysisMaker, messageSender, bot)
+const telegramRating = new TelegramRating(analysisMaker, messageSender, bot);
 
 /*
 updateGame(req, res) {

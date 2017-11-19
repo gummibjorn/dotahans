@@ -7,17 +7,17 @@ import Rating = AnalysisFormat.Rating;
 import WhoWon = AnalysisFormat.WhoWon;
 import {statsPages} from "./analyzers/determinewhowon.analyzer";
 import {duration} from "moment";
+
 require("moment-duration-format");
 
 
-
 const makeInlineKeyboardButton = (text, callback_data) => ({text, callback_data});
-const ratingReplyMarkup = { inline_keyboard: [ ratingOptions.map(makeInlineKeyboardButton) ] };
+const ratingReplyMarkup = {inline_keyboard: [ratingOptions.map(makeInlineKeyboardButton)]};
 
 interface MessageInfo {
-  messageId : MessageId;
+  messageId: MessageId;
   messageType: "start" | "end";
-  chatId : number;
+  chatId: number;
 }
 
 export class MessageSender {
@@ -30,11 +30,11 @@ export class MessageSender {
 
     analysisMaker.complete.subscribe((analysis: Analysis) => {
       //todo: figure out if it's a match complete or match in progress message
-      this.sendMatchComplete(analysis.getMatchId(), this.format(analysis))
+      this.sendMatchComplete(analysis.getMatchId(), this.format(analysis));
     });
   }
 
-  public format(analysis: Analysis): string{
+  public format(analysis: Analysis): string {
     return [
       whoWon,
       rating
@@ -43,14 +43,14 @@ export class MessageSender {
   }
 
   private async sendMatchComplete(matchId: MatchId, text: string) {
-    const messageInfo : MessageInfo = this.messageInfo[matchId];
-    if(messageInfo === undefined || messageInfo.messageType === "start"){
-      if(messageInfo && messageInfo.messageType === "start"){
+    const messageInfo: MessageInfo = this.messageInfo[matchId];
+    if (messageInfo === undefined || messageInfo.messageType === "start") {
+      if (messageInfo && messageInfo.messageType === "start") {
         //in case of existing start message, remove that
-        this.bot.deleteMessage(messageInfo.chatId, messageInfo.messageId + "", {})
+        this.bot.deleteMessage(messageInfo.chatId, messageInfo.messageId + "", {});
       }
       //send new message
-      const message = await this.bot.sendMessage(process.env.TELEGRAM_CHAT,  text, {
+      const message = await this.bot.sendMessage(process.env.TELEGRAM_CHAT, text, {
         reply_markup: ratingReplyMarkup
       }) as Message;
       this.chatToMatch[message.message_id] = matchId;
@@ -61,7 +61,7 @@ export class MessageSender {
         message_id: messageInfo.messageId,
         chat_id: messageInfo.chatId,
         reply_markup: ratingReplyMarkup
-      })
+      });
     }
 
 
@@ -73,11 +73,14 @@ interface Formatter {
   format: (data: any) => string
 }
 
-const makeFormatter(type: AnalysisTypeEnum, format: (data: any) => string) => ({type, format})
+function makeFormatter(type: AnalysisTypeEnum, format: (data: any) => string) {
+  return ({type, format});
+}
+
 export const rating = makeFormatter(AnalysisTypeEnum.RATING, (rating: Rating) => {
   let msg = "";
   //for some reason, Map.entries() refuses to work
-  for(const userid of Object.keys(rating)){
+  for (const userid of Object.keys(rating)) {
     const r = rating[userid];
     msg += `${r}`;
   }
@@ -87,10 +90,10 @@ export const rating = makeFormatter(AnalysisTypeEnum.RATING, (rating: Rating) =>
 export const whoWon = makeFormatter(AnalysisTypeEnum.WHOWON, (whoWon: WhoWon) => {
   const durationFormat = duration(whoWon.duration, "seconds").format("hh:mm:ss");
   const wonLost = whoWon.won ? "won" : "lost";
-  const ranked = whoWon.ranked ? "Ranked" : ""
+  const ranked = whoWon.ranked ? "Ranked" : "";
   const stats = Object.keys(statsPages)
     .map(key => `[${key}](${statsPages[key].replace(":id:", whoWon.matchId)})`)
     .join(" ");
   return `${whoWon.players.join(", ")} ${wonLost} ${ranked} ${whoWon.mode} after ${durationFormat} ${stats}`;
 
-})
+});

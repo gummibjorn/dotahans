@@ -11,7 +11,8 @@ export class StatsTable implements Analyzer {
 
   analyze(matchInfo: DotaApiMatchResult): any {
     const duration = moment.duration(matchInfo.duration, "seconds").format("hh:mm:ss");
-    const winner = matchInfo.radiant_win ? "Radiant" : "Dire";
+    //TODO: get info from previous analyzer
+    const winner = matchInfo.radiant_win ? "Mir händ gwunne" : "Ufs Dach becho";
     const drawer = new CanvasTableDrawer(winner, duration, matchInfo.radiant_score, matchInfo.dire_score);
 
     matchInfo.players.forEach(p => {
@@ -29,16 +30,16 @@ export class StatsTable implements Analyzer {
 
     drawer.draw().then(canvas => {
       const stream = canvas.pngStream();
-      const out = fs.createWriteStream("statsTable.jpg");
+      const out = fs.createWriteStream("statsTable.png");
       stream.on("data", function (chunk) {
         out.write(chunk);
       });
 
       stream.on("end", function () {
-        console.log("saved png, which is actually a jpg lul? is it?");
+        console.log("saved png");
       });
     });
-    return {statsTableULR: "statsTable.jpg"};
+    return {statsTableULR: "statsTable.png"};
   }
 
   private getName(account_id: number): string {

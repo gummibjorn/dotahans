@@ -4,7 +4,7 @@ import * as fs from "fs";
 
 describe("Canvas Stats Table", () => {
   it("should be drawn", (done) => {
-    const drawer = new CanvasTableDrawer("Radiant", "12:12", 10, 24);
+    const drawer = new CanvasTableDrawer("Mir händ gwunne", "12:12", 10, 24);
     drawer.addPlayer({hero: 1, kills: 5, deaths: 3, assists: 17, level: 25, name: "Hans"});
     drawer.addPlayer({hero: 2, kills: 8, deaths: 14, assists: 3, level: 22, name: "Peter"});
     drawer.addPlayer({hero: 4, kills: 19, deaths: 0, assists: 2, level: 21, name: "Gurken"});
@@ -19,7 +19,7 @@ describe("Canvas Stats Table", () => {
 
     drawer.draw().then(canvas => {
       const stream = canvas.pngStream();
-      const out = fs.createWriteStream(__dirname + "/test.jpg");
+      const out = fs.createWriteStream(__dirname + "/test.png");
       stream.on('data', function (chunk) {
         out.write(chunk);
       });

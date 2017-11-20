@@ -13,7 +13,8 @@ export class StatsTable implements Analyzer {
 
   analyze(matchInfo: DotaApiMatchResult, analysis: Analysis): any {
     const duration = moment.duration(matchInfo.duration, "seconds").format("hh:mm:ss");
-    const didWeWin = (analysis.getPart(AnalysisTypeEnum.WHOWON, () => {}) as WhoWon).won;
+    const didWeWin = (analysis.getPart(AnalysisTypeEnum.WHOWON, () => {
+    }) as WhoWon).won;
     const winner = didWeWin ? "Mir händ gwunne" : "Ufs Dach becho";
     const drawer = new CanvasTableDrawer(winner, duration, matchInfo.radiant_score, matchInfo.dire_score);
 
@@ -30,18 +31,21 @@ export class StatsTable implements Analyzer {
       );
     });
 
-    drawer.draw().then(canvas => {
-      const stream = canvas.pngStream();
-      const out = fs.createWriteStream("statsTable.png");
-      stream.on("data", function (chunk) {
-        out.write(chunk);
-      });
+    return {
+      bufferPromise: drawer.draw().then(canvas => {
+        const stream = canvas.pngStream();
+        const out = fs.createWriteStream(__dirname + "/test.png");
+        stream.on('data', function (chunk) {
+          out.write(chunk);
+        });
 
-      stream.on("end", function () {
-        console.log("saved png");
-      });
-    });
-    return {statsTableULR: "statsTable.png"};
+        stream.on('end', function () {
+          console.log('saved png');
+        });
+
+        return canvas.toBuffer();
+      })
+    };
   }
 
   private getName(account_id: number): string {
@@ -51,7 +55,7 @@ export class StatsTable implements Analyzer {
       return knownPlayer.name;
     } else {
       //TODO: resolve steam account name
-      return "Unknown player";
+      return "-";
     }
   }
 }

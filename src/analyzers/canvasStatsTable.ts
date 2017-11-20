@@ -27,7 +27,6 @@ const duration_font_size = 15 * scaling_factor;
 const player_text_font_size = 15 * scaling_factor;
 
 
-
 const radiantColor = "#92A525";
 const direColor = "red";
 
@@ -47,8 +46,11 @@ export class CanvasTableDrawer {
     const canvas = createCanvas(width, 10 * line_height + header_height);
     const ctx = canvas.getContext("2d");
     this.drawHeader(ctx);
-    this.players.forEach((p, i) => this.drawPlayer(ctx, p, i));
-    return canvas;
+    const promises = [];
+    this.players.forEach((p, i) => {
+      promises.push(this.drawPlayer(ctx, p, i));
+    });
+    return Promise.all(promises).then(() => canvas);
   }
 
   getWinnerColor(): string {
@@ -98,6 +100,10 @@ export class CanvasTableDrawer {
   async drawPlayer(ctx, player: TablePlayer, index: number) {
 
     const image = await loadImage(`img/hero${player.hero}.png`);
+
+    if (player.name === "Mario") {
+      await setTimeout(() => {}, 1000);
+    }
 
     ctx.beginPath();
     ctx.rect(this.xOffset, this.yOffset, width, line_height);

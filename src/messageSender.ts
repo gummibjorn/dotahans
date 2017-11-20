@@ -7,8 +7,9 @@ import Rating = AnalysisFormat.Rating;
 import WhoWon = AnalysisFormat.WhoWon;
 import {statsPages} from "./analyzers/determinewhowon.analyzer";
 import {duration} from "moment";
+import {Stream} from "stream";
 
-require("moment-duration-format");
+import "moment-duration-format";
 
 
 const makeInlineKeyboardButton = (text, callback_data) => ({text, callback_data});
@@ -18,6 +19,7 @@ interface MessageInfo {
   messageId: MessageId;
   messageType: "start" | "end";
   chatId: number;
+  statsTableSent: boolean;
 }
 
 export class MessageSender {
@@ -30,7 +32,16 @@ export class MessageSender {
 
     analysisMaker.complete.subscribe((analysis: Analysis) => {
       //todo: figure out if it's a match complete or match in progress message
-      this.sendMatchComplete(analysis.getMatchId(), this.format(analysis));
+      this.sendMatchComplete(analysis.getMatchId(), this.format(analysis)).then(
+        messageInfo => {
+          if (!messageInfo.statsTableSent) {
+            const streamPromise = analysis.get(AnalysisTypeEnum.STATSTABLE).bufferPromise;
+            if (streamPromise) {
+              this.sendStatsTable(streamPromise);
+            }
+          }
+        }
+      );
     });
   }
 
@@ -42,7 +53,13 @@ export class MessageSender {
       .join("\n\n");
   }
 
-  private async sendMatchComplete(matchId: MatchId, text: string) {
+  private async sendStatsTable(streamPromise: Promise<Buffer>) {
+    streamPromise.then(buffer => {
+      this.bot.sendPhoto(process.env.CHAT_ID, buffer);
+    });
+  }
+
+  private async sendMatchComplete(matchId: MatchId, text: string): Promise<MessageInfo> {
     const messageInfo: MessageInfo = this.messageInfo[matchId];
     if (messageInfo === undefined || messageInfo.messageType === "start") {
       if (messageInfo && messageInfo.messageType === "start") {
@@ -54,7 +71,12 @@ export class MessageSender {
         reply_markup: ratingReplyMarkup
       }) as Message;
       this.chatToMatch[message.message_id] = matchId;
-      this.messageInfo[matchId] = {messageId: message.message_id, messageType: "end", chatId: message.chat.id};
+      this.messageInfo[matchId] = {
+        messageId: message.message_id,
+        messageType: "end",
+        chatId: message.chat.id,
+        statsTableSent: false
+      };
     } else {
       //update existing message
       this.bot.editMessageText(text, {
@@ -63,6 +85,7 @@ export class MessageSender {
         reply_markup: ratingReplyMarkup
       });
     }
+    return this.messageInfo[matchId];
   }
 }
 
@@ -93,5 +116,4 @@ export const whoWon = makeFormatter(AnalysisTypeEnum.WHOWON, (whoWon: WhoWon) =>
     .map(key => `[${key}](${statsPages[key].replace(":id:", whoWon.matchId)})`)
     .join(" ");
   return `${whoWon.players.join(", ")} ${wonLost} ${ranked} ${whoWon.mode} after ${durationFormat} ${stats}`;
-
 });

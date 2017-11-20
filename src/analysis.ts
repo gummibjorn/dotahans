@@ -11,6 +11,10 @@ export class Analysis {
   constructor(private matchId: MatchId) {
   }
 
+  get(type: AnalysisTypeEnum) {
+    return this.parts[type];
+  }
+
   getPart(type: AnalysisTypeEnum, creator = () => undefined) {
     let part = this.parts[type];
     if (part === undefined) {
@@ -20,7 +24,7 @@ export class Analysis {
     return part;
   }
 
-  formatPart(type: AnalysisTypeEnum, formatter): string {
+  formatPart(type: AnalysisTypeEnum, formatter: (any: any) => string): string {
     const part = this.parts[type];
     if (part === undefined) {
       return "";

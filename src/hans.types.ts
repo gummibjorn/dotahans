@@ -1,4 +1,5 @@
 import {DotaApiMatchResult} from "./dota-api";
+import {Analysis} from "./analysis";
 
 //received via http from dota clients
 export class GameStateIntegrationMessage {
@@ -23,7 +24,7 @@ export class TelegramMessage {
 export interface Analyzer {
   analysisType: AnalysisTypeEnum;
 
-  analyze(matchInfo: DotaApiMatchResult): any;
+  analyze(matchInfo: DotaApiMatchResult, analysis: Analysis): any;
 }
 
 export declare namespace AnalysisFormat {

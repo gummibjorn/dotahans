@@ -1,18 +1,20 @@
-import {AnalysisTypeEnum, Analyzer} from "../hans.types";
+import {AnalysisFormat, AnalysisTypeEnum, Analyzer} from "../hans.types";
 import {DotaApiMatchResult} from "../dota-api";
 import {HansConfig} from "../hans.config";
 import {CanvasTableDrawer} from "./canvasStatsTable";
 import * as fs from "fs";
 import * as moment from "moment";
 import "moment-duration-format";
+import {Analysis} from "../analysis";
+import WhoWon = AnalysisFormat.WhoWon;
 
 export class StatsTable implements Analyzer {
   analysisType = AnalysisTypeEnum.STATSTABLE;
 
-  analyze(matchInfo: DotaApiMatchResult): any {
+  analyze(matchInfo: DotaApiMatchResult, analysis: Analysis): any {
     const duration = moment.duration(matchInfo.duration, "seconds").format("hh:mm:ss");
-    //TODO: get info from previous analyzer
-    const winner = matchInfo.radiant_win ? "Mir händ gwunne" : "Ufs Dach becho";
+    const didWeWin = (analysis.getPart(AnalysisTypeEnum.WHOWON, () => {}) as WhoWon).won;
+    const winner = didWeWin ? "Mir händ gwunne" : "Ufs Dach becho";
     const drawer = new CanvasTableDrawer(winner, duration, matchInfo.radiant_score, matchInfo.dire_score);
 
     matchInfo.players.forEach(p => {

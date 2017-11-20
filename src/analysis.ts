@@ -5,34 +5,35 @@ import {DotaApiMatchResult} from "./dota-api";
 import {DetermineWhoWon} from "./analyzers/determinewhowon.analyzer";
 import {StatsTable} from "./analyzers/statsTable.analyzer";
 
-export class Analysis{
-  private parts : Map<AnalysisTypeEnum, any> = new Map();
+export class Analysis {
+  private parts: Map<AnalysisTypeEnum, any> = new Map();
 
-  constructor(private matchId: MatchId){}
+  constructor(private matchId: MatchId) {
+  }
 
-  getPart(type : AnalysisTypeEnum, creator = ()=>null){
+  getPart(type: AnalysisTypeEnum, creator = () => undefined) {
     let part = this.parts[type];
-    if(part === undefined){
-      part = creator()
+    if (part === undefined) {
+      part = creator();
       this.parts[type] = part;
     }
     return part;
   }
 
-  formatPart(type: AnalysisTypeEnum, formatter) : string{
+  formatPart(type: AnalysisTypeEnum, formatter): string {
     const part = this.parts[type];
-    if(part === undefined){
+    if (part === undefined) {
       return "";
     } else {
       return formatter(part);
     }
   }
 
-  setPart(type : AnalysisTypeEnum, part){
+  setPart(type: AnalysisTypeEnum, part) {
     this.parts[type] = part;
   }
 
-  getMatchId = () => this.matchId
+  getMatchId = () => this.matchId;
 
 }
 
@@ -49,22 +50,22 @@ export class AnalysisMaker {
     });
   }
 
-  public externalAnalysis(matchId: MatchId, type: AnalysisTypeEnum, data: any){
+  public externalAnalysis(matchId: MatchId, type: AnalysisTypeEnum, data: any) {
     const a = this.getAnalysis(matchId);
     a.setPart(type, data);
     this.complete.next(a);
   }
 
-  public updateRating(matchId : MatchId, userId: UserId, rating: string){
+  public updateRating(matchId: MatchId, userId: UserId, rating: string) {
     const analysis = this.getAnalysis(matchId);
-    let ratings = analysis.getPart(AnalysisTypeEnum.RATING, ()=>new Map())
+    const ratings = analysis.getPart(AnalysisTypeEnum.RATING, () => new Map());
     ratings[userId] = rating;
-    this.complete.next(analysis)
+    this.complete.next(analysis);
   }
 
-  private getAnalysis(matchId : MatchId){
+  private getAnalysis(matchId: MatchId) {
     let analysis = this.analysises[matchId];
-    if(analysis === undefined){
+    if (analysis === undefined) {
       analysis = new Analysis(matchId);
       this.analysises[matchId] = analysis;
     }
@@ -78,7 +79,7 @@ export class AnalysisMaker {
     ];
     const analysis: Analysis = new Analysis(match.match_id);
     analyzers.forEach(analyzer => {
-      analysis.setPart(analyzer.analysisType, analyzer.analyze(match));
+      analysis.setPart(analyzer.analysisType, analyzer.analyze(match, analysis));
     });
     this.analysises.set(match.match_id, analysis);
     this.complete.next(analysis);

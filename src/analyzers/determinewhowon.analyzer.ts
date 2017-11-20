@@ -2,7 +2,7 @@ import {AnalysisFormat, AnalysisTypeEnum, Analyzer} from "../hans.types";
 import {DotaApiMatchResult, Player} from "../dota-api";
 import {HansConfig} from "../hans.config";
 import WhoWon = AnalysisFormat.WhoWon;
-import {DotaApi} from "../dota.api";
+import {Analysis} from "../analysis";
 
 export const statsPages = {
   "OD": "https://www.opendota.com/matches/:id:",
@@ -10,16 +10,16 @@ export const statsPages = {
 };
 
 export const gameModes = {
-  0 : "None",
-  1 : "All Pick",
-  2 : "Captain's Mode",
-  3 : "Random Draft",
-  4 : "Single Draft",
-  5 : "All Random",
-  6 : "Intro",
-  7 : "Diretide",
-  8 : "Reverse Captain's Mode",
-  9 : "The Greeviling",
+  0: "None",
+  1: "All Pick",
+  2: "Captain's Mode",
+  3: "Random Draft",
+  4: "Single Draft",
+  5: "All Random",
+  6: "Intro",
+  7: "Diretide",
+  8: "Reverse Captain's Mode",
+  9: "The Greeviling",
   10: "Tutorial",
   11: "Mid Only",
   12: "Least Played",
@@ -36,7 +36,7 @@ export const gameModes = {
 export class DetermineWhoWon implements Analyzer {
   analysisType = AnalysisTypeEnum.WHOWON;
 
-  analyze(matchInfo: DotaApiMatchResult): WhoWon {
+  analyze(matchInfo: DotaApiMatchResult, analysis: Analysis): WhoWon {
     return {
       won: this.didWeWin(matchInfo),
       duration: matchInfo.duration,
@@ -48,10 +48,10 @@ export class DetermineWhoWon implements Analyzer {
   }
 
   //if we want account names here, we should query the dota api for them on startup and cache the names
-  private getOurPlayerNames(matchInfo:DotaApiMatchResult): string[]{
+  private getOurPlayerNames(matchInfo: DotaApiMatchResult): string[] {
     return matchInfo.players.map(p => {
-      for(const account of HansConfig.players){
-        if(account.account_id === p.account_id){
+      for (const account of HansConfig.players) {
+        if (account.account_id === p.account_id) {
           return account.name;
         }
       }

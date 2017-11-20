@@ -38,7 +38,7 @@ export class MessageSender {
     return [
       whoWon,
       rating
-    ].map((f: Formatter) => analysis.formatPart(f.type, f.format(analysis)))
+    ].map((f: Formatter) => analysis.formatPart(f.type, f.format))
       .join("\n\n");
   }
 
@@ -50,7 +50,7 @@ export class MessageSender {
         this.bot.deleteMessage(messageInfo.chatId, messageInfo.messageId + "", {});
       }
       //send new message
-      const message = await this.bot.sendMessage(process.env.TELEGRAM_CHAT, text, {
+      const message = await this.bot.sendMessage(process.env.CHAT_ID, text, {
         reply_markup: ratingReplyMarkup
       }) as Message;
       this.chatToMatch[message.message_id] = matchId;
@@ -63,8 +63,6 @@ export class MessageSender {
         reply_markup: ratingReplyMarkup
       });
     }
-
-
   }
 }
 

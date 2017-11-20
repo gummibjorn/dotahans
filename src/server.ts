@@ -65,7 +65,7 @@ const dotaApi = new DotaApi();
 const bot = new TelegramBot(process.env.TELEGRAM_TOKEN, {polling: true});
 bot.on("message", (msg) => {
   console.log(JSON.stringify(msg, undefined, 2));
-  bot.sendMessage(msg.chat.id, "Hello dear user");
+  bot.sendMessage(msg.chat.id, "Hello dear penis");
 });
 
 const matchManager = new MatchManager();
@@ -82,12 +82,11 @@ updateGame(req, res) {
 telegramBot.onUpdate(({messageId: string, bonus: any}) => {
     const matchId = messageSender.getMatchId(messageId)
     analysis.botUpdate(matchId, bonus)
-
 })*/
 
 //poller
 const poller = new Poller(matchManager, dotaApi);
-//setInterval(() => poller.poll(), 60000);
+//setInterval(() => poller.poll(), 6000);
 
 
 //app.post("/gamestate", (req, res) => gameManager.onGameUpdate(req.toJson()))

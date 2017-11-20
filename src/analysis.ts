@@ -34,7 +34,6 @@ export class Analysis {
   }
 
   getMatchId = () => this.matchId;
-
 }
 
 export class AnalysisMaker {

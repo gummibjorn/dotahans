@@ -11,7 +11,7 @@ describe("DetermineWhoWon", () => {
   });
 
   it("Configured players should win", () => {
-    expect(determineWhoWonAnalyzer.analyze(matchResult, new Analysis(undefined)).won).toBeTruthy();
+    expect(determineWhoWonAnalyzer.analyze(matchResult, undefined).won).toBeTruthy();
   });
 
 });

@@ -101,6 +101,12 @@ export class MessageSender {
         reply_markup: ratingReplyMarkup,
         parse_mode: "markdown",
         disable_web_page_preview: true
+      }).catch(error => {
+        if (error.message.includes("400")) {
+          console.log("message was updated without any changes");
+        } else {
+          console.log("unknown error");
+        }
       });
     }
     return this.messageInfo[matchId];

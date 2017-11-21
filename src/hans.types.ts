@@ -11,6 +11,7 @@ export type MessageId = number;
 export type UserId = number;
 
 export enum AnalysisType {
+  NAMERESOLVER,
   STATSTABLE,
   WHOWON,
   RATING
@@ -20,6 +21,11 @@ export class TelegramMessage {
 
 }
 
+export interface AsyncAnalyzer {
+  analysisType: AnalysisType;
+
+  analyze(matchInfo: DotaApiMatchResult, analysis: Analysis): Promise<any>;
+}
 
 export interface Analyzer {
   analysisType: AnalysisType;

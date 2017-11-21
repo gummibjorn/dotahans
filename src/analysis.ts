@@ -1,9 +1,11 @@
 import {MatchManager} from "./matchManager";
 import {Subject} from "rxjs/Subject";
-import {AnalysisType, Analyzer, MatchId, UserId} from "./hans.types";
+import {AnalysisType, Analyzer, AsyncAnalyzer, MatchId, UserId} from "./hans.types";
 import {DotaApiMatchResult} from "./dota-api";
 import {DetermineWhoWon} from "./analyzers/determinewhowon.analyzer";
 import {StatsTable} from "./analyzers/statsTable.analyzer";
+import {DotaApi} from "./dota.api";
+import {NameResolver} from "./analyzers/nameResolver.analyzer";
 
 export class Analysis {
   private parts: Map<AnalysisType, any> = new Map();
@@ -45,7 +47,7 @@ export class AnalysisMaker {
   complete: Subject<Analysis> = new Subject();
   private analysises = new Map<MatchId, Analysis>();
 
-  constructor(matchManager: MatchManager) {
+  constructor(matchManager: MatchManager, private dotaApi: DotaApi) {
     matchManager.endOfMatch.subscribe(match => {
       this.startSyncAnalysis(match);
       this.startAsyncAnalysis(match);
@@ -74,8 +76,9 @@ export class AnalysisMaker {
     return analysis;
   }
 
-  private asyncAnalyzers: Analyzer[] = [
-    new StatsTable()
+  private asyncAnalyzers: AsyncAnalyzer[] = [
+    new StatsTable(),
+    new NameResolver(this.dotaApi)
   ];
 
   private syncAnalyzers: Analyzer[] = [

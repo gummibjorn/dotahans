@@ -38,6 +38,7 @@ export class MessageSender {
             const streamPromise = analysis.get(AnalysisTypeEnum.STATSTABLE).bufferPromise;
             if (streamPromise) {
               this.sendStatsTable(streamPromise);
+              messageInfo.statsTableSent = true;
             }
           }
         }

@@ -67,10 +67,10 @@ export class AnalysisMaker {
   }
 
   private getAnalysis(matchId: MatchId) {
-    let analysis = this.analysises[matchId];
+    let analysis = this.analysises.get(matchId);
     if (analysis === undefined) {
       analysis = new Analysis(matchId);
-      this.analysises[matchId] = analysis;
+      this.analysises.set(matchId, analysis);
     }
     return analysis;
   }

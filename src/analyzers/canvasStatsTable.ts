@@ -45,12 +45,19 @@ export class CanvasTableDrawer {
   async draw() {
     const canvas = createCanvas(width, 10 * line_height + header_height);
     const ctx = canvas.getContext("2d");
-    this.drawHeader(ctx);
+    //load hero images before drawing
     const promises = [];
-    this.players.forEach((p, i) => {
-      promises.push(this.drawPlayer(ctx, p, i));
-    });
-    return Promise.all(promises).then(() => canvas);
+    this.players.forEach(p => promises.push(loadImage(`img/hero${p.hero}.png`)));
+
+    return Promise.all(promises).then(
+      images => {
+        this.drawHeader(ctx);
+        this.players.forEach((p, i) => {
+          this.drawPlayer(ctx, p, i, images[i]);
+        });
+        return canvas;
+      }
+    );
   }
 
   getWinnerColor(): string {
@@ -97,13 +104,7 @@ export class CanvasTableDrawer {
   }
 
   //first 5 players must be radiant
-  async drawPlayer(ctx, player: TablePlayer, index: number) {
-
-    const image = await loadImage(`img/hero${player.hero}.png`);
-
-    if (player.name === "Mario") {
-      await setTimeout(() => {}, 1000);
-    }
+  drawPlayer(ctx, player: TablePlayer, index: number, image) {
 
     ctx.beginPath();
     ctx.rect(this.xOffset, this.yOffset, width, line_height);

@@ -18,7 +18,7 @@ export class TelegramRating {
   constructor(analysisMaker : AnalysisMaker, messageSender : MessageSender, bot: TelegramBot){
 
     bot.on('callback_query', (msg : CallbackQuery) => {
-      console.log(JSON.stringify(msg, null, 2));
+      //console.log(JSON.stringify(msg, null, 2));
       const messageId = msg.message.message_id;
       const matchId = messageSender.chatToMatch[messageId];
       const userId = msg.from.id;
@@ -29,7 +29,6 @@ export class TelegramRating {
       }
       matchRating[userId] = ratingOptions[msg.data]
       analysisMaker.externalAnalysis(matchId, AnalysisTypeEnum.RATING, matchRating)
-
     })
   }
 

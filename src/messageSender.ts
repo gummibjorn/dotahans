@@ -24,44 +24,39 @@ export class MessageSender {
 
   private messageInfo: Map<MatchId, MessageInfo> = new Map();
   chatToMatch: Map<MessageId, MatchId> = new Map();
+  private sendingInProgress: Promise<MessageInfo>;
 
   constructor(analysisMaker: AnalysisMaker, messageMatchMap: any, private bot: TelegramBot) {
     //this.sendMatchComplete(new Analysis(1))
-    let sendingInProgress: Promise<MessageInfo>;
 
     analysisMaker.complete.subscribe((analysis: Analysis) => {
       //todo: figure out if it's a match complete or match in progress message
-      if (!sendingInProgress) {
-        sendingInProgress = this.sendMatchComplete(analysis.getMatchId(), this.format(analysis));
-        sendingInProgress.then(
-          messageInfo => {
-            if (!messageInfo.statsTableSent) {
-              const statsTableAnalysis = analysis.get(AnalysisType.STATSTABLE);
-              if (statsTableAnalysis) {
-                this.sendStatsTable(statsTableAnalysis.buffer);
-                messageInfo.statsTableSent = true;
-              }
-            }
-            sendingInProgress = undefined;
-          }
-        );
+      if (!this.sendingInProgress) {
+        this.sendMessage(analysis);
       } else {
-        sendingInProgress.then(
+        this.sendingInProgress.then(
           () => {
-            sendingInProgress = this.sendMatchComplete(analysis.getMatchId(), this.format(analysis));
-            sendingInProgress.then(messageInfo => {
-              if (!messageInfo.statsTableSent) {
-                const statsTableAnalysis = analysis.get(AnalysisType.STATSTABLE);
-                if (statsTableAnalysis) {
-                  this.sendStatsTable(statsTableAnalysis.buffer);
-                  messageInfo.statsTableSent = true;
-                }
-              }
-            });
+            this.sendMessage(analysis);
           }
         );
       }
     });
+  }
+
+  private sendMessage(analysis: Analysis) {
+    this.sendingInProgress = this.sendMatchComplete(analysis.getMatchId(), this.format(analysis));
+    this.sendingInProgress.then(
+      messageInfo => {
+        if (!messageInfo.statsTableSent) {
+          const statsTableAnalysis = analysis.get(AnalysisType.STATSTABLE);
+          if (statsTableAnalysis) {
+            this.sendStatsTable(statsTableAnalysis.buffer);
+            messageInfo.statsTableSent = true;
+          }
+        }
+        this.sendingInProgress = undefined;
+      }
+    );
   }
 
   public format(analysis: Analysis): string {

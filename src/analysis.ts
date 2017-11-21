@@ -1,21 +1,21 @@
 import {MatchManager} from "./matchManager";
 import {Subject} from "rxjs/Subject";
-import {AnalysisTypeEnum, Analyzer, MatchId, UserId} from "./hans.types";
+import {AnalysisType, Analyzer, MatchId, UserId} from "./hans.types";
 import {DotaApiMatchResult} from "./dota-api";
 import {DetermineWhoWon} from "./analyzers/determinewhowon.analyzer";
 import {StatsTable} from "./analyzers/statsTable.analyzer";
 
 export class Analysis {
-  private parts: Map<AnalysisTypeEnum, any> = new Map();
+  private parts: Map<AnalysisType, any> = new Map();
 
   constructor(private matchId: MatchId) {
   }
 
-  get(type: AnalysisTypeEnum) {
+  get(type: AnalysisType) {
     return this.parts[type];
   }
 
-  getPart(type: AnalysisTypeEnum, creator = () => undefined) {
+  getPart(type: AnalysisType, creator = () => undefined) {
     let part = this.parts[type];
     if (part === undefined) {
       part = creator();
@@ -24,7 +24,7 @@ export class Analysis {
     return part;
   }
 
-  formatPart(type: AnalysisTypeEnum, formatter: (any: any) => string): string {
+  formatPart(type: AnalysisType, formatter: (any: any) => string): string {
     const part = this.parts[type];
     if (part === undefined) {
       return "";
@@ -33,7 +33,7 @@ export class Analysis {
     }
   }
 
-  setPart(type: AnalysisTypeEnum, part) {
+  setPart(type: AnalysisType, part) {
     this.parts[type] = part;
   }
 
@@ -48,12 +48,11 @@ export class AnalysisMaker {
   constructor(matchManager: MatchManager) {
     matchManager.endOfMatch.subscribe(match => {
       this.startSyncAnalysis(match);
-      //sync analysis
-      //aysnc analyse
+      this.startAsyncAnalysis(match);
     });
   }
 
-  public externalAnalysis(matchId: MatchId, type: AnalysisTypeEnum, data: any) {
+  public externalAnalysis(matchId: MatchId, type: AnalysisType, data: any) {
     const a = this.getAnalysis(matchId);
     a.setPart(type, data);
     this.complete.next(a);
@@ -61,7 +60,7 @@ export class AnalysisMaker {
 
   public updateRating(matchId: MatchId, userId: UserId, rating: string) {
     const analysis = this.getAnalysis(matchId);
-    const ratings = analysis.getPart(AnalysisTypeEnum.RATING, () => new Map());
+    const ratings = analysis.getPart(AnalysisType.RATING, () => new Map());
     ratings[userId] = rating;
     this.complete.next(analysis);
   }
@@ -75,17 +74,37 @@ export class AnalysisMaker {
     return analysis;
   }
 
+  private asyncAnalyzers: Analyzer[] = [
+    new StatsTable()
+  ];
+
+  private syncAnalyzers: Analyzer[] = [
+    new DetermineWhoWon()
+  ];
+
+  private runAsyncAnalyzers(match: DotaApiMatchResult, analysis: Analysis) {
+    this.asyncAnalyzers.forEach(analyzer => {
+      const asyncResult = analyzer.analyze(match, analysis);
+      if (asyncResult) {
+        asyncResult.then(result => {
+          analysis.setPart(analyzer.analysisType, result);
+          this.complete.next(analysis);
+        });
+      }
+    });
+  }
+
+  private startAsyncAnalysis(match: DotaApiMatchResult) {
+    this.runAsyncAnalyzers(match, this.analysises.get(match.match_id));
+    this.complete.subscribe(analysis => this.runAsyncAnalyzers(match, analysis) );
+  }
+
   private startSyncAnalysis(match: DotaApiMatchResult) {
-    const analyzers: Analyzer[] = [
-      new DetermineWhoWon(),
-      new StatsTable()
-    ];
     const analysis: Analysis = new Analysis(match.match_id);
-    analyzers.forEach(analyzer => {
+    this.syncAnalyzers.forEach(analyzer => {
       analysis.setPart(analyzer.analysisType, analyzer.analyze(match, analysis));
     });
     this.analysises.set(match.match_id, analysis);
     this.complete.next(analysis);
   }
 }
-

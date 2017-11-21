@@ -1,4 +1,4 @@
-import {AnalysisFormat, AnalysisTypeEnum, Analyzer} from "../hans.types";
+import {AnalysisFormat, AnalysisType, Analyzer} from "../hans.types";
 import {DotaApiMatchResult} from "../dota-api";
 import {HansConfig} from "../hans.config";
 import {CanvasTableDrawer} from "./canvasStatsTable";
@@ -9,11 +9,15 @@ import {Analysis} from "../analysis";
 import WhoWon = AnalysisFormat.WhoWon;
 
 export class StatsTable implements Analyzer {
-  analysisType = AnalysisTypeEnum.STATSTABLE;
+  analysisType = AnalysisType.STATSTABLE;
 
   analyze(matchInfo: DotaApiMatchResult, analysis: Analysis): any {
+    if (!this.didDependantAnalyzersRun(analysis) || this.didIRun(analysis)) {
+      return undefined;
+    }
+
     const duration = moment.duration(matchInfo.duration, "seconds").format("hh:mm:ss");
-    const didWeWin = (analysis.getPart(AnalysisTypeEnum.WHOWON, () => {
+    const didWeWin = (analysis.getPart(AnalysisType.WHOWON, () => {
     }) as WhoWon).won;
     const winner = didWeWin ? "Mir händ gwunne" : "Ufs Dach becho";
     const drawer = new CanvasTableDrawer(winner, duration, matchInfo.radiant_score, matchInfo.dire_score);
@@ -31,21 +35,26 @@ export class StatsTable implements Analyzer {
       );
     });
 
-    return {
-      bufferPromise: drawer.draw().then(canvas => {
-        const stream = canvas.pngStream();
-        const out = fs.createWriteStream(__dirname + "/test.png");
-        stream.on('data', function (chunk) {
-          out.write(chunk);
-        });
+    return drawer.draw().then(canvas => {
+      // const stream = canvas.pngStream();
+      // const out = fs.createWriteStream(__dirname + "/test.png");
+      // stream.on('data', function (chunk) {
+      //   out.write(chunk);
+      // });
+      //
+      // stream.on('end', function () {
+      //   console.log('saved png');
+      // });
+      return {buffer: canvas.toBuffer()};
+    });
+  }
 
-        stream.on('end', function () {
-          console.log('saved png');
-        });
+  private didDependantAnalyzersRun(analysis: Analysis): boolean {
+    return analysis.get(AnalysisType.WHOWON); // && analysis.get(AnalysisType.NAMERESOLVER) ;
+  }
 
-        return canvas.toBuffer();
-      })
-    };
+  private didIRun(analysis: Analysis): boolean {
+    return analysis.get(this.analysisType); // && analysis.get(AnalysisType.NAMERESOLVER) ;
   }
 
   private getName(account_id: number): string {

@@ -1,4 +1,4 @@
-import {AnalysisFormat, AnalysisTypeEnum, Analyzer} from "../hans.types";
+import {AnalysisFormat, AnalysisType, Analyzer} from "../hans.types";
 import {DotaApiMatchResult, Player} from "../dota-api";
 import {HansConfig} from "../hans.config";
 import WhoWon = AnalysisFormat.WhoWon;
@@ -34,7 +34,7 @@ export const gameModes = {
 };
 
 export class DetermineWhoWon implements Analyzer {
-  analysisType = AnalysisTypeEnum.WHOWON;
+  analysisType = AnalysisType.WHOWON;
 
   analyze(matchInfo: DotaApiMatchResult, analysis: Analysis): WhoWon {
     return {

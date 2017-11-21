@@ -1,5 +1,5 @@
 import {Analysis, AnalysisMaker} from "./analysis";
-import {AnalysisFormat, AnalysisTypeEnum, MatchId, MessageId} from "./hans.types";
+import {AnalysisFormat, AnalysisType, MatchId, MessageId} from "./hans.types";
 import {ratingOptions} from "./telegramRating";
 import * as TelegramBot from "node-telegram-bot-api";
 import {Message} from "node-telegram-bot-api";
@@ -7,8 +7,6 @@ import Rating = AnalysisFormat.Rating;
 import WhoWon = AnalysisFormat.WhoWon;
 import {statsPages} from "./analyzers/determinewhowon.analyzer";
 import {duration} from "moment";
-import {Stream} from "stream";
-
 import "moment-duration-format";
 
 
@@ -29,20 +27,40 @@ export class MessageSender {
 
   constructor(analysisMaker: AnalysisMaker, messageMatchMap: any, private bot: TelegramBot) {
     //this.sendMatchComplete(new Analysis(1))
+    let sendingInProgress: Promise<MessageInfo>;
 
     analysisMaker.complete.subscribe((analysis: Analysis) => {
       //todo: figure out if it's a match complete or match in progress message
-      this.sendMatchComplete(analysis.getMatchId(), this.format(analysis)).then(
-        messageInfo => {
-          if (!messageInfo.statsTableSent) {
-            const streamPromise = analysis.get(AnalysisTypeEnum.STATSTABLE).bufferPromise;
-            if (streamPromise) {
-              this.sendStatsTable(streamPromise);
-              messageInfo.statsTableSent = true;
+      if (!sendingInProgress) {
+        sendingInProgress = this.sendMatchComplete(analysis.getMatchId(), this.format(analysis));
+        sendingInProgress.then(
+          messageInfo => {
+            if (!messageInfo.statsTableSent) {
+              const statsTableAnalysis = analysis.get(AnalysisType.STATSTABLE);
+              if (statsTableAnalysis) {
+                this.sendStatsTable(statsTableAnalysis.buffer);
+                messageInfo.statsTableSent = true;
+              }
             }
+            sendingInProgress = undefined;
           }
-        }
-      );
+        );
+      } else {
+        sendingInProgress.then(
+          () => {
+            sendingInProgress = this.sendMatchComplete(analysis.getMatchId(), this.format(analysis));
+            sendingInProgress.then(messageInfo => {
+              if (!messageInfo.statsTableSent) {
+                const statsTableAnalysis = analysis.get(AnalysisType.STATSTABLE);
+                if (statsTableAnalysis) {
+                  this.sendStatsTable(statsTableAnalysis.buffer);
+                  messageInfo.statsTableSent = true;
+                }
+              }
+            });
+          }
+        );
+      }
     });
   }
 
@@ -54,9 +72,9 @@ export class MessageSender {
       .join("\n\n");
   }
 
-  private async sendStatsTable(streamPromise: Promise<Buffer>) {
-    streamPromise.then(buffer => {
-      this.bot.sendPhoto(process.env.CHAT_ID, buffer);
+  private async sendStatsTable(buffer: Buffer) {
+    this.bot.sendPhoto(process.env.CHAT_ID, buffer, {
+      disable_notification: true
     });
   }
 
@@ -69,7 +87,9 @@ export class MessageSender {
       }
       //send new message
       const message = await this.bot.sendMessage(process.env.CHAT_ID, text, {
-        reply_markup: ratingReplyMarkup
+        reply_markup: ratingReplyMarkup,
+        parse_mode: "markdown",
+        disable_web_page_preview: true
       }) as Message;
       this.chatToMatch[message.message_id] = matchId;
       this.messageInfo[matchId] = {
@@ -83,7 +103,9 @@ export class MessageSender {
       this.bot.editMessageText(text, {
         message_id: messageInfo.messageId,
         chat_id: messageInfo.chatId,
-        reply_markup: ratingReplyMarkup
+        reply_markup: ratingReplyMarkup,
+        parse_mode: "markdown",
+        disable_web_page_preview: true
       });
     }
     return this.messageInfo[matchId];
@@ -91,15 +113,15 @@ export class MessageSender {
 }
 
 interface Formatter {
-  type: AnalysisTypeEnum,
+  type: AnalysisType,
   format: (data: any) => string
 }
 
-function makeFormatter(type: AnalysisTypeEnum, format: (data: any) => string) {
+function makeFormatter(type: AnalysisType, format: (data: any) => string) {
   return ({type, format});
 }
 
-export const rating = makeFormatter(AnalysisTypeEnum.RATING, (rating: Rating) => {
+export const rating = makeFormatter(AnalysisType.RATING, (rating: Rating) => {
   let msg = "";
   //for some reason, Map.entries() refuses to work
   for (const userid of Object.keys(rating)) {
@@ -109,7 +131,7 @@ export const rating = makeFormatter(AnalysisTypeEnum.RATING, (rating: Rating) =>
   return msg;
 });
 
-export const whoWon = makeFormatter(AnalysisTypeEnum.WHOWON, (whoWon: WhoWon) => {
+export const whoWon = makeFormatter(AnalysisType.WHOWON, (whoWon: WhoWon) => {
   const durationFormat = duration(whoWon.duration, "seconds").format("hh:mm:ss");
   const wonLost = whoWon.won ? "won" : "lost";
   const ranked = whoWon.ranked ? "Ranked" : "";

@@ -1,7 +1,7 @@
 import * as emoji from "node-emoji"
 import {AnalysisMaker} from "./analysis";
 import {MessageSender} from "./messageSender";
-import {AnalysisTypeEnum, MatchId, MessageId, UserId} from "./hans.types";
+import {AnalysisType, MatchId, MessageId, UserId} from "./hans.types";
 import * as TelegramBot from "node-telegram-bot-api";
 import {CallbackQuery} from "node-telegram-bot-api";
 
@@ -28,7 +28,7 @@ export class TelegramRating {
         this.matchRatings[matchId] = new Map();
       }
       matchRating[userId] = ratingOptions[msg.data]
-      analysisMaker.externalAnalysis(matchId, AnalysisTypeEnum.RATING, matchRating)
+      analysisMaker.externalAnalysis(matchId, AnalysisType.RATING, matchRating)
     })
   }
 

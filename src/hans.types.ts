@@ -10,7 +10,7 @@ export type MatchId = number;
 export type MessageId = number;
 export type UserId = number;
 
-export enum AnalysisTypeEnum {
+export enum AnalysisType {
   STATSTABLE,
   WHOWON,
   RATING
@@ -22,7 +22,7 @@ export class TelegramMessage {
 
 
 export interface Analyzer {
-  analysisType: AnalysisTypeEnum;
+  analysisType: AnalysisType;
 
   analyze(matchInfo: DotaApiMatchResult, analysis: Analysis): any;
 }

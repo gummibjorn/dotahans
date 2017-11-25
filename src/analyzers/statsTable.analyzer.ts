@@ -1,8 +1,7 @@
 import {AnalysisFormat, AnalysisType, AsyncAnalyzer} from "../hans.types";
-import {DotaApiMatchResult} from "../dota-api";
+import {DotaApiMatchResult, PlayerSummary} from "../dota-api";
 import {HansConfig} from "../hans.config";
 import {CanvasTableDrawer} from "./canvasStatsTable";
-import * as fs from "fs";
 import * as moment from "moment";
 import "moment-duration-format";
 import {Analysis} from "../analysis";
@@ -18,7 +17,7 @@ export class StatsTable implements AsyncAnalyzer {
 
     const duration = moment.duration(matchInfo.duration, "seconds").format("hh:mm:ss");
     const didWeWin = (analysis.get(AnalysisType.WHOWON) as WhoWon).won;
-    const playerNameTuples = analysis.get(AnalysisType.NAMERESOLVER).playerNames;
+    const playerSummaryTuples = analysis.get(AnalysisType.NAMERESOLVER).playerSummaries;
     const winner = didWeWin ? "Mir händ gwunne" : "Ufs Dach becho";
     const drawer = new CanvasTableDrawer(winner, duration, matchInfo.radiant_score, matchInfo.dire_score);
 
@@ -30,7 +29,7 @@ export class StatsTable implements AsyncAnalyzer {
           deaths: p.deaths,
           assists: p.assists,
           level: p.level,
-          name: this.getName(p.account_id, playerNameTuples.find(tuple => tuple.account_id === p.account_id)),
+          name: this.getName(p.account_id, playerSummaryTuples.find(tuple => tuple.account_id === p.account_id)),
         }
       );
     });
@@ -48,14 +47,14 @@ export class StatsTable implements AsyncAnalyzer {
     return analysis.get(this.analysisType);
   }
 
-  private getName(account_id: number, playerNameTuple): string {
+  private getName(account_id: number, playerSummaryTuple): string {
     //shitty to test with hard wired config files
     const knownPlayer = HansConfig.players.find(p => p.account_id === account_id);
     if (knownPlayer) {
       return knownPlayer.name;
     } else {
-      if (playerNameTuple) {
-        return playerNameTuple.playerName;
+      if (playerSummaryTuple) {
+        return playerSummaryTuple.playerSummary.personaname;
       } else {
         return "-";
       }

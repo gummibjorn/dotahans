@@ -5,7 +5,7 @@ import {DotaApiMatchResult} from "./dota-api";
 import {DetermineWhoWon} from "./analyzers/determinewhowon.analyzer";
 import {StatsTable} from "./analyzers/statsTable.analyzer";
 import {DotaApi} from "./dota.api";
-import {NameResolver} from "./analyzers/nameResolver.analyzer";
+import {PlayerSummaryResolver} from "./analyzers/playerSummaryResolver.analyzer";
 
 export class Analysis {
   private parts: Map<AnalysisType, any> = new Map();
@@ -78,7 +78,7 @@ export class AnalysisMaker {
 
   private asyncAnalyzers: AsyncAnalyzer[] = [
     new StatsTable(),
-    new NameResolver(this.dotaApi)
+    new PlayerSummaryResolver(this.dotaApi)
   ];
 
   private syncAnalyzers: Analyzer[] = [

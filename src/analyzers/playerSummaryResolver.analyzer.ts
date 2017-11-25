@@ -5,7 +5,7 @@ import {DotaApi} from "../dota.api";
 import "rxjs/add/operator/toPromise";
 
 
-export class NameResolver implements AsyncAnalyzer {
+export class PlayerSummaryResolver implements AsyncAnalyzer {
   analysisType = AnalysisType.NAMERESOLVER;
 
   constructor(private dotaApi: DotaApi) {
@@ -17,8 +17,8 @@ export class NameResolver implements AsyncAnalyzer {
     }
     return this.dotaApi.getPlayerSummaries(matchInfo.players.map(p => p.account_id)).toPromise().then(
       players => ({
-        playerNames: players.map(p => {
-          return {account_id: p.steamid3, playerName: p.personaname};
+        playerSummaries: players.map(p => {
+          return {account_id: p.steamid3, playerSummary: p};
         })
       }));
   }

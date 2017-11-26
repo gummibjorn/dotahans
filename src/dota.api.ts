@@ -10,7 +10,7 @@ export class DotaApi {
   private PLAYER_SUMMARY = "https://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/";
 
   getLastMatch(playerId: number): Observable<Match> {
-    const requestProps = {key: process.env.STEAM_API_KEY, account_id: playerId, matches_requested: 1};
+    const requestProps = {account_id: playerId, key: process.env.STEAM_API_KEY, matches_requested: 1};
     return Observable.create(observable => {
       request.get({url: this.MATCH_HISTORY, qs: requestProps}, (err, response, body) => {
         //TODO: error handling

@@ -40,7 +40,6 @@ export class CanvasTableDrawer {
   }
 
   addPlayer(player: TablePlayer) {
-    console.log(player.hero)
     this.players.push(player);
   }
 

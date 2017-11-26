@@ -45,6 +45,7 @@
     "@types/node-telegram-bot-api": "^0.28.2",
     "async": "^2.1.2",
     "bcrypt-nodejs": "^0.0.3",
+    "bignumber.js": "^4.1.0",
     "body-parser": "^1.15.2",
     "canvas": "^2.0.0-alpha.6",
     "compression": "^1.6.2",

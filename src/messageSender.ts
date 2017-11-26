@@ -8,6 +8,7 @@ import WhoWon = AnalysisFormat.WhoWon;
 import {statsPages} from "./analyzers/determinewhowon.analyzer";
 import {duration} from "moment";
 import "moment-duration-format";
+import ItemStats = AnalysisFormat.ItemStats;
 
 
 const makeInlineKeyboardButton = (text, callback_data) => ({text, callback_data});
@@ -62,6 +63,7 @@ export class MessageSender {
   public format(analysis: Analysis): string {
     return [
       whoWon,
+      itemStats,
       rating
     ].map((f: Formatter) => analysis.formatPart(f.type, f.format))
       .join("\n\n");
@@ -135,9 +137,17 @@ export const rating = makeFormatter(AnalysisType.RATING, (rating: Rating) => {
 export const whoWon = makeFormatter(AnalysisType.WHOWON, (whoWon: WhoWon) => {
   const durationFormat = duration(whoWon.duration, "seconds").format("hh:mm:ss");
   const wonLost = whoWon.won ? "won" : "lost";
-  const ranked = whoWon.ranked ? "Ranked" : "";
+  const ranked = whoWon.ranked ? "Ranked " : "";
   const stats = Object.keys(statsPages)
     .map(key => `[${key}](${statsPages[key].replace(":id:", whoWon.matchId)})`)
     .join(" ");
-  return `${whoWon.players.join(", ")} ${wonLost} ${ranked} ${whoWon.mode} after ${durationFormat} ${stats}`;
+  return `${whoWon.players.join(", ")} ${wonLost} ${ranked}${whoWon.mode} after ${durationFormat} ${stats}`;
+});
+
+export const itemStats = makeFormatter(AnalysisType.ITEMSTATS, (itemStats: ItemStats[]) => {
+  let outString = "";
+  itemStats.forEach(stats => {
+    outString += `${stats.player} built his ${stats.amount} ${stats.item}` + "\n";
+  });
+  return outString;
 });

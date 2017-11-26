@@ -11,6 +11,7 @@ export type MessageId = number;
 export type UserId = number;
 
 export enum AnalysisType {
+  ITEMSTATS,
   NAMERESOLVER,
   STATSTABLE,
   WHOWON,
@@ -34,7 +35,7 @@ export interface Analyzer {
 }
 
 export declare namespace AnalysisFormat {
-  type Rating = Map<UserId, string>
+  type Rating = Map<UserId, string>;
   interface WhoWon {
     won: boolean;
     duration: number;
@@ -42,5 +43,10 @@ export declare namespace AnalysisFormat {
     ranked: boolean;
     players: string[];
     matchId: MatchId;
+  }
+  interface ItemStats {
+    player: string;
+    item: string;
+    amount: number;
   }
 }

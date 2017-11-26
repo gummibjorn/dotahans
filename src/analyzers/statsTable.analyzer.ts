@@ -1,5 +1,5 @@
 import {AnalysisFormat, AnalysisType, AsyncAnalyzer} from "../hans.types";
-import {DotaApiMatchResult, PlayerSummary} from "../dota-api";
+import {DotaApiMatchResult} from "../dota-api";
 import {HansConfig} from "../hans.config";
 import {CanvasTableDrawer} from "./canvasStatsTable";
 import * as moment from "moment";

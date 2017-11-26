@@ -61,6 +61,7 @@
     "lusca": "^1.4.1",
     "moment": "^2.19.2",
     "moment-duration-format": "^1.3.0",
+    "mongodb": "^2.2.33",
     "mongoose": "^4.6.6",
     "morgan": "^1.7.0",
     "node-emoji": "^1.8.1",

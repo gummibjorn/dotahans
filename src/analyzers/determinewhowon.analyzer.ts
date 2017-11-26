@@ -60,7 +60,7 @@ export class DetermineWhoWon implements Analyzer {
   }
 
   private didWeWin(matchInfo): boolean {
-    return this.areWeRadiant(matchInfo.players) && matchInfo.radiant_win;
+    return this.areWeRadiant(matchInfo.players) ? matchInfo.radiant_win : !matchInfo.radiant_win;
   }
 
   private areWeRadiant(players: Player[]): boolean {

@@ -1,7 +1,6 @@
 import {} from "jest";
 import {DetermineWhoWon} from "../src/analyzers/determinewhowon.analyzer";
 import {matchResult} from "./testMatchResult";
-import {Analysis} from "../src/analysis";
 
 describe("DetermineWhoWon", () => {
   let determineWhoWonAnalyzer: DetermineWhoWon;

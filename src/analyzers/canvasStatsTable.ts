@@ -35,10 +35,12 @@ export class CanvasTableDrawer {
   private xOffset = 0;
   private yOffset = 0;
 
-  constructor(private winner: string, private duration: string, private radiantScore: number, private direScore: number) {
+  constructor(private winner: string, private duration: string, private radiantScore: number, private direScore: number,
+              private radiant_win: boolean) {
   }
 
   addPlayer(player: TablePlayer) {
+    console.log(player.hero)
     this.players.push(player);
   }
 
@@ -61,7 +63,7 @@ export class CanvasTableDrawer {
   }
 
   getWinnerColor(): string {
-    return this.winner === "Radiant" ? radiantColor : direColor;
+    return this.radiant_win ? radiantColor : direColor;
   }
 
   drawHeader(ctx) {

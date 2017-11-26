@@ -2,7 +2,6 @@ import {Observable} from "rxjs/Observable";
 import {DotaApiMatchResult, Match, PlayerSummary} from "./dota-api";
 import * as request from "request";
 import BigNumber from "bignumber.js";
-import {PlayerSession} from "aws-sdk/clients/gamelift";
 
 export class DotaApi {
 

@@ -3,6 +3,7 @@ import {DotaApiMatchResult, Player} from "../dota-api";
 import {Analysis} from "../analysis";
 import ItemStats = AnalysisFormat.ItemStats;
 import {HansConfig} from "../hans.config";
+import {items} from "../items";
 
 export class ItemStatsAnalyzer implements Analyzer {
   analysisType = AnalysisType.ITEMSTATS;
@@ -24,7 +25,6 @@ export class ItemStatsAnalyzer implements Analyzer {
         });
       }
     );
-    console.log(itemStats)
     return itemStats;
   }
 
@@ -35,10 +35,16 @@ export class ItemStatsAnalyzer implements Analyzer {
       currentAmount++;
     }
     if (currentAmount % itemThreshold.threshold === 0) {
+      let item = items.find(item => item.id === itemThreshold.item).name;
+      if (!item) {
+        item = "unkown";
+      } else {
+        item = item.split("_")[1];
+      }
       return {
         player: "Mario",
-        item: "Iron talon",
-        amount: 1000
+        item: item,
+        amount: currentAmount
       };
     }
   }

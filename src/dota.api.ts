@@ -7,6 +7,8 @@ export class DotaApi {
 
   private MATCH_HISTORY = "https://api.steampowered.com/IDOTA2Match_570/GetMatchHistory/V001";
   private MATCH_DETAIL = "https://api.steampowered.com/IDOTA2Match_570/GetMatchDetails/V001/";
+  private ITEMS = "https://api.steampowered.com/IEconDOTA2_570/GetGameItems/v0001/";
+
   private PLAYER_SUMMARY = "https://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/";
 
   getLastMatch(playerId: number): Observable<Match> {
@@ -16,6 +18,18 @@ export class DotaApi {
         //TODO: error handling
         const result = JSON.parse(body).result;
         observable.next(result.matches[0]);
+        observable.complete();
+      });
+    });
+  }
+
+  getItems(): Observable<any> {
+    console.log("test")
+    const requestProps = {key: process.env.STEAM_API_KEY};
+    return Observable.create(observable => {
+      request.get({url: this.ITEMS, qs: requestProps}, (err, response, body) => {
+        const parsedBody = JSON.parse(body);
+        observable.next(parsedBody.result.items);
         observable.complete();
       });
     });

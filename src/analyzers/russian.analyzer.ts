@@ -1,12 +1,12 @@
-import {AnalysisFormat, AnalysisType, Analyzer} from "../hans.types";
+import {AnalysisFormat, AnalysisType, AsyncAnalyzer} from "../hans.types";
 import {DotaApiMatchResult} from "../dota-api";
 import {Analysis} from "../analysis";
 import RussianAnalysis = AnalysisFormat.RussianAnalysis;
 
-export class Russian implements Analyzer {
+export class Russian implements AsyncAnalyzer {
   analysisType = AnalysisType.RUSSIAN;
 
-  analyze(matchInfo: DotaApiMatchResult, analysis: Analysis): RussianAnalysis {
+  analyze(matchInfo: DotaApiMatchResult, analysis: Analysis): Promise<RussianAnalysis> {
     if (!this.didDependantAnalyzersRun(analysis) || this.didIRun(analysis)) {
       return undefined;
     }
@@ -24,7 +24,7 @@ export class Russian implements Analyzer {
       nonTeamMemberPercentage: 0
     };
 
-    return result;
+    return Promise.resolve(result);
   }
 
   private didDependantAnalyzersRun(analysis: Analysis): boolean {

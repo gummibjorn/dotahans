@@ -22,8 +22,6 @@ export class StatsTable implements AsyncAnalyzer {
     const winMessage = didWeWin ? "Mir händ gwunne" : "Ufs Dach becho";
     const drawer = new CanvasTableDrawer(winMessage, duration, matchInfo.radiant_score, matchInfo.dire_score, matchInfo.radiant_win);
 
-    console.log((analysis.get(AnalysisType.RUSSIAN) as RussianAnalysis).totalPercentage);
-
     matchInfo.players.forEach(p => {
       drawer.addPlayer(
         {

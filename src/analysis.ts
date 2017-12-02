@@ -79,12 +79,12 @@ export class AnalysisMaker {
 
   private asyncAnalyzers: AsyncAnalyzer[] = [
     new StatsTable(),
-    new PlayerSummaryResolver(this.dotaApi)
+    new PlayerSummaryResolver(this.dotaApi),
+    new Russian()
   ];
 
   private syncAnalyzers: Analyzer[] = [
-    new DetermineWhoWon(),
-    new Russian()
+    new DetermineWhoWon()
   ];
 
   private runAsyncAnalyzers(match: DotaApiMatchResult, analysis: Analysis) {

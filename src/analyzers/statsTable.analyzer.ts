@@ -6,6 +6,7 @@ import * as moment from "moment";
 import "moment-duration-format";
 import {Analysis} from "../analysis";
 import WhoWon = AnalysisFormat.WhoWon;
+import RussianAnalysis = AnalysisFormat.RussianAnalysis;
 
 export class StatsTable implements AsyncAnalyzer {
   analysisType = AnalysisType.STATSTABLE;
@@ -20,6 +21,8 @@ export class StatsTable implements AsyncAnalyzer {
     const playerSummaryTuples = analysis.get(AnalysisType.NAMERESOLVER).playerSummaries;
     const winMessage = didWeWin ? "Mir händ gwunne" : "Ufs Dach becho";
     const drawer = new CanvasTableDrawer(winMessage, duration, matchInfo.radiant_score, matchInfo.dire_score, matchInfo.radiant_win);
+
+    console.log((analysis.get(AnalysisType.RUSSIAN) as RussianAnalysis).totalPercentage);
 
     matchInfo.players.forEach(p => {
       drawer.addPlayer(
@@ -40,7 +43,7 @@ export class StatsTable implements AsyncAnalyzer {
   }
 
   private didDependantAnalyzersRun(analysis: Analysis): boolean {
-    return analysis.get(AnalysisType.WHOWON) && analysis.get(AnalysisType.NAMERESOLVER);
+    return analysis.get(AnalysisType.WHOWON) && analysis.get(AnalysisType.NAMERESOLVER) && analysis.get(AnalysisType.RUSSIAN);
   }
 
   private didIRun(analysis: Analysis): boolean {

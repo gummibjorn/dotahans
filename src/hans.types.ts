@@ -14,7 +14,8 @@ export enum AnalysisType {
   NAMERESOLVER,
   STATSTABLE,
   WHOWON,
-  RATING
+  RATING,
+  RUSSIAN
 }
 
 export class TelegramMessage {
@@ -42,5 +43,9 @@ export declare namespace AnalysisFormat {
     ranked: boolean;
     players: string[];
     matchId: MatchId;
+  }
+  interface RussianAnalysis {
+    totalPercentage: number;
+    nonTeamMemberPercentage: number;
   }
 }

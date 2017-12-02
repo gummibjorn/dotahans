@@ -20,7 +20,7 @@ import * as dotenv from "dotenv";
     expect(russianAnalyzer.analyze(matchResult, undefined)).toBe(0);
   });
 
-});
+});*/
 
 describe("Integration", () => {
   it("Send telegram message", () => {
@@ -30,9 +30,10 @@ describe("Integration", () => {
     const bot = new TelegramBot(process.env.TELEGRAM_TOKEN, {polling: true});
     const matchManager = new MatchManager();
     const analysisMaker = new AnalysisMaker(matchManager, new DotaApi());
-
+    const messageSender = new MessageSender(analysisMaker, messageMatchMap, bot);
+    const telegramRating = new TelegramRating(analysisMaker, messageSender, bot);
     matchManager.onMatchFinished(matchResult);
 
     expect(matchManager).toBeTruthy();
   });
-});*/
+});

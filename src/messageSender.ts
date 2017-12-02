@@ -9,6 +9,7 @@ import {statsPages} from "./analyzers/determinewhowon.analyzer";
 import {duration} from "moment";
 import "moment-duration-format";
 import ItemStats = AnalysisFormat.ItemStats;
+import RussianAnalysis = AnalysisFormat.RussianAnalysis;
 
 
 const makeInlineKeyboardButton = (text, callback_data) => ({text, callback_data});
@@ -64,6 +65,7 @@ export class MessageSender {
     return [
       whoWon,
       itemStats,
+      russians,
       rating
     ].map((f: Formatter) => analysis.formatPart(f.type, f.format))
       .join("\n\n");
@@ -150,4 +152,8 @@ export const itemStats = makeFormatter(AnalysisType.ITEMSTATS, (itemStats: ItemS
     outString += `${stats.player} built his ${stats.amount} ${stats.item}` + "\n";
   });
   return outString;
+});
+
+export const russians = makeFormatter(AnalysisType.RUSSIAN, (russian: RussianAnalysis) => {
+  return `${russian.totalPercentage}% were russians.` + "\n";
 });

@@ -20,7 +20,7 @@ import * as dotenv from "dotenv";
     expect(russianAnalyzer.analyze(matchResult, undefined)).toBe(0);
   });
 
-});*/
+});
 
 describe("Integration", () => {
   it("Send telegram message", () => {
@@ -36,4 +36,4 @@ describe("Integration", () => {
 
     expect(matchManager).toBeTruthy();
   });
-});
+});*/

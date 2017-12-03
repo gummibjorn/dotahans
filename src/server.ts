@@ -58,7 +58,7 @@ import {MessageSender} from "./messageSender";
 import {Poller} from "./poller";
 import {DotaApi} from "./dota.api";
 import {TelegramRating} from "./telegramRating";
-import {HansConfig} from "./hans.config";
+import {MongoClient} from "mongodb";
 
 const messageMatchMap: any = {};
 const dotaApi = new DotaApi();
@@ -69,12 +69,19 @@ bot.on("message", (msg) => {
   bot.sendMessage(msg.chat.id, "Hello dear penis");
 });
 
-const matchManager = new MatchManager();
-const analysisMaker = new AnalysisMaker(matchManager, dotaApi);
-const messageSender = new MessageSender(analysisMaker, messageMatchMap, bot);
-const telegramRating = new TelegramRating(analysisMaker, messageSender, bot);
+const url = "mongodb://localhost:27017/dotahans";
+MongoClient.connect(url, function(err, db) {
+  const matchManager = new MatchManager();
+  const analysisMaker = new AnalysisMaker(matchManager, dotaApi, db);
+  const messageSender = new MessageSender(analysisMaker, messageMatchMap, bot);
+  const telegramRating = new TelegramRating(analysisMaker, messageSender, bot);
 
-dotaApi.getPlayerSummaries([HansConfig.players[0].account_id]).subscribe()
+  const poller = new Poller(matchManager, dotaApi);
+  //setInterval(() => poller.poll(), 6000);
+  db.close();
+});
+
+
 
 /*
 updateGame(req, res) {
@@ -86,10 +93,6 @@ telegramBot.onUpdate(({messageId: string, bonus: any}) => {
     const matchId = messageSender.getMatchId(messageId)
     analysis.botUpdate(matchId, bonus)
 })*/
-
-//poller
-const poller = new Poller(matchManager, dotaApi);
-//setInterval(() => poller.poll(), 6000);
 
 
 //app.post("/gamestate", (req, res) => gameManager.onGameUpdate(req.toJson()))

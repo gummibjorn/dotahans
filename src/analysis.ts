@@ -7,6 +7,7 @@ import {StatsTable} from "./analyzers/statsTable.analyzer";
 import {DotaApi} from "./dota.api";
 import {PlayerSummaryResolver} from "./analyzers/playerSummaryResolver.analyzer";
 import {ItemStatsAnalyzer} from "./analyzers/itemStats.analyzer";
+import {Db} from "mongodb";
 
 export class Analysis {
   private parts: Map<AnalysisType, any> = new Map();
@@ -48,7 +49,7 @@ export class AnalysisMaker {
   complete: Subject<Analysis> = new Subject();
   private analysises = new Map<MatchId, Analysis>();
 
-  constructor(matchManager: MatchManager, private dotaApi: DotaApi) {
+  constructor(matchManager: MatchManager, private dotaApi: DotaApi, private db: Db) {
     matchManager.endOfMatch.subscribe(match => {
       this.startSyncAnalysis(match);
       this.startAsyncAnalysis(match);
@@ -79,12 +80,12 @@ export class AnalysisMaker {
 
   private asyncAnalyzers: AsyncAnalyzer[] = [
     new StatsTable(),
-    new PlayerSummaryResolver(this.dotaApi)
+    new PlayerSummaryResolver(this.dotaApi),
+    new ItemStatsAnalyzer(this.db)
   ];
 
   private syncAnalyzers: Analyzer[] = [
-    new DetermineWhoWon(),
-    new ItemStatsAnalyzer()
+    new DetermineWhoWon()
   ];
 
   private runAsyncAnalyzers(match: DotaApiMatchResult, analysis: Analysis) {

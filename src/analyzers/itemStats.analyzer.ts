@@ -34,7 +34,7 @@ export class ItemStatsAnalyzer implements Analyzer {
     if (this.doesInventoryContainItem(player, itemThreshold.item)) {
       currentAmount++;
     }
-    if (currentAmount % itemThreshold.threshold === 0) {
+    if (currentAmount % itemThreshold.threshold === 0 && currentAmount !== 0) {
       let item = items.find(item => item.id === itemThreshold.item).name;
       if (!item) {
         item = "unkown";
@@ -42,7 +42,7 @@ export class ItemStatsAnalyzer implements Analyzer {
         item = item.split("_")[1];
       }
       return {
-        player: "Mario",
+        player: HansConfig.getPlayerNameById(player.account_id),
         item: item,
         amount: currentAmount
       };

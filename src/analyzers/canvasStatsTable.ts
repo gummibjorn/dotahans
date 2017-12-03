@@ -119,7 +119,12 @@ export class CanvasTableDrawer {
     ctx.drawImage(image, this.xOffset, this.yOffset, player_image_width, line_height);
     this.xOffset += player_name_xOffset;
 
-    ctx.fillText(player.name || "-", this.xOffset, this.yOffset + line_height / 2);
+    let playerName = player.name;
+    if (playerName.length > 15) {
+      playerName = playerName.slice(0, 14) + "...";
+    }
+
+    ctx.fillText(playerName || "-", this.xOffset, this.yOffset + line_height / 2);
     this.xOffset += player_level_xOffset;
 
     ctx.fillText(player.level, this.xOffset, this.yOffset + line_height / 2);

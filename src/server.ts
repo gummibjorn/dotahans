@@ -69,7 +69,7 @@ bot.on("message", (msg) => {
   bot.sendMessage(msg.chat.id, "Hello dear penis");
 });
 
-const url = "mongodb://localhost:27017/dotahans";
+const url = process.env.MONGO_URL || "mongodb://localhost:27017/dotahans";
 MongoClient.connect(url, function(err, db) {
   const matchManager = new MatchManager();
   const analysisMaker = new AnalysisMaker(matchManager, dotaApi, db);
@@ -115,9 +115,10 @@ app.use(errorHandler());
 /**
  * Start Express server.
  */
-app.listen(app.get("port"), () => {
+const port = process.env.PORT || app.get("port");
+app.listen(port, () => {
   //TODO: add cronjob initiation here
-  console.log(("  App is running at http://localhost:%d in %s mode"), app.get("port"), app.get("env"));
+  console.log(("  App is running at http://localhost:%d in %s mode"), port, app.get("env"));
   console.log("  Press CTRL-C to stop\n");
 });
 

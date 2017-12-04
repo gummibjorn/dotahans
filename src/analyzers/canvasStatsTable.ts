@@ -1,4 +1,5 @@
 import {createCanvas, loadImage} from "canvas";
+import {HansConfig} from "../hans.config";
 
 interface TablePlayer {
   hero: number;
@@ -16,10 +17,11 @@ const line_height = 30 * scaling_factor;
 const header_height = 75 * scaling_factor;
 const team_score_offset = 50 * scaling_factor;
 const player_image_width = 50 * scaling_factor;
+const player_name_width = 85 * scaling_factor;
 
-const player_stats_xOffset = 50 * scaling_factor;
+const player_name_xOffset = 60 * scaling_factor;
 const player_level_xOffset = 110 * scaling_factor;
-const player_name_xOffset = 70 * scaling_factor;
+const player_stats_xOffset = 45 * scaling_factor;
 
 const winning_text_font_size = 28 * scaling_factor;
 const team_score_font_size = 20 * scaling_factor;
@@ -104,6 +106,10 @@ export class CanvasTableDrawer {
     }
   }
 
+  private isKnownPlayer(name: string): boolean {
+    return Boolean(HansConfig.players.find(p => p.name === name));
+  }
+
   //first 5 players must be radiant
   drawPlayer(ctx, player: TablePlayer, index: number, image) {
 
@@ -112,6 +118,14 @@ export class CanvasTableDrawer {
     ctx.fillStyle = this.toggleFillColor();
     ctx.fill();
 
+    if (this.isKnownPlayer(player.name)) {
+      ctx.beginPath();
+      ctx.strokeStyle = "white";
+      ctx.lineWidth = 8;
+      ctx.strokeRect(this.xOffset + player_image_width + 4, this.yOffset, width - player_image_width - 8, line_height - 2);
+      ctx.fill();
+    }
+
     ctx.font = `${player_text_font_size}px Arial`;
     ctx.textBaseline = "middle";
     ctx.textAlign = "start";
@@ -119,9 +133,16 @@ export class CanvasTableDrawer {
     ctx.drawImage(image, this.xOffset, this.yOffset, player_image_width, line_height);
     this.xOffset += player_name_xOffset;
 
-    let playerName = player.name;
-    if (playerName.length > 15) {
-      playerName = playerName.slice(0, 14) + "...";
+
+    let playerName = "";
+    let i = 0;
+    while (ctx.measureText(playerName).width < player_name_width && player.name.length > i) {
+      playerName += player.name[i];
+      i++;
+    }
+
+    if (ctx.measureText(player.name).width > player_name_width) {
+      playerName += "..";
     }
 
     ctx.fillText(playerName || "-", this.xOffset, this.yOffset + line_height / 2);

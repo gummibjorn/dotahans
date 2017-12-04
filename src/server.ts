@@ -77,7 +77,7 @@ MongoClient.connect(url, function(err, db) {
   const telegramRating = new TelegramRating(analysisMaker, messageSender, bot);
 
   const poller = new Poller(matchManager, dotaApi);
-  //setInterval(() => poller.poll(), 6000);
+  setInterval(() => poller.poll(), 60000);
   db.close();
 });
 

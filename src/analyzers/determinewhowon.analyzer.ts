@@ -1,6 +1,6 @@
 import {AnalysisFormat, AnalysisType, Analyzer} from "../hans.types";
 import {DotaApiMatchResult, Player} from "../dota-api";
-import {HansConfig} from "../hans.config";
+import {Account} from "../hans.config";
 import WhoWon = AnalysisFormat.WhoWon;
 import {Analysis} from "../analysis";
 
@@ -36,6 +36,8 @@ export const gameModes = {
 export class DetermineWhoWon implements Analyzer {
   analysisType = AnalysisType.WHOWON;
 
+  constructor(private players: Account[]){}
+
   analyze(matchInfo: DotaApiMatchResult, analysis: Analysis): WhoWon {
     return {
       won: this.didWeWin(matchInfo),
@@ -50,7 +52,7 @@ export class DetermineWhoWon implements Analyzer {
   //if we want account names here, we should query the dota api for them on startup and cache the names
   private getOurPlayerNames(matchInfo: DotaApiMatchResult): string[] {
     return matchInfo.players.map(p => {
-      for (const account of HansConfig.players) {
+      for (const account of this.players) {
         if (account.account_id === p.account_id) {
           return account.name;
         }
@@ -65,7 +67,7 @@ export class DetermineWhoWon implements Analyzer {
 
   private areWeRadiant(players: Player[]): boolean {
     let areWeRadiant = false;
-    HansConfig.players.forEach(player => {
+    this.players.forEach(player => {
       const firstKnownPlayer = players.find(p => p.account_id === player.account_id);
       if (firstKnownPlayer) {
         areWeRadiant = firstKnownPlayer.player_slot < 5;

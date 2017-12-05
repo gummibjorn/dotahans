@@ -1,15 +1,15 @@
 import {MatchId} from "./hans.types";
 import {MatchManager} from "./matchManager";
 import {DotaApi} from "./dota.api";
-import {HansConfig} from "./hans.config";
+import {Account} from "./hans.config";
 
 export class Poller {
   private matches: Set<MatchId> = new Set();
-  constructor(private matchManager: MatchManager, private dotaApi: DotaApi) {
+  constructor(private matchManager: MatchManager, private dotaApi: DotaApi, private accounts: Account[]) {
   }
 
   poll() {
-    HansConfig.players.forEach(account => {
+    this.accounts.forEach(account => {
       this.dotaApi.getLastMatch(account.account_id).subscribe(
         match => {
           if (!this.matches.has(match.match_id)) {

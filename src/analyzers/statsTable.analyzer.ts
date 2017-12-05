@@ -1,6 +1,6 @@
 import {AnalysisFormat, AnalysisType, AsyncAnalyzer} from "../hans.types";
 import {DotaApiMatchResult} from "../dota-api";
-import {HansConfig} from "../hans.config";
+import {Account} from "../hans.config";
 import {CanvasTableDrawer} from "./canvasStatsTable";
 import * as moment from "moment";
 import "moment-duration-format";
@@ -9,6 +9,8 @@ import WhoWon = AnalysisFormat.WhoWon;
 
 export class StatsTable implements AsyncAnalyzer {
   analysisType = AnalysisType.STATSTABLE;
+
+  constructor(private knownPlayers: Account[]){}
 
   analyze(matchInfo: DotaApiMatchResult, analysis: Analysis): Promise<any> {
     if (!this.didDependantAnalyzersRun(analysis) || this.didIRun(analysis)) {
@@ -19,7 +21,7 @@ export class StatsTable implements AsyncAnalyzer {
     const didWeWin = (analysis.get(AnalysisType.WHOWON) as WhoWon).won;
     const playerSummaryTuples = analysis.get(AnalysisType.NAMERESOLVER).playerSummaries;
     const winMessage = didWeWin ? "Mir händ gwunne" : "Ufs Dach becho";
-    const drawer = new CanvasTableDrawer(winMessage, duration, matchInfo.radiant_score, matchInfo.dire_score, matchInfo.radiant_win);
+    const drawer = new CanvasTableDrawer(winMessage, duration, matchInfo.radiant_score, matchInfo.dire_score, matchInfo.radiant_win, this.knownPlayers);
 
     matchInfo.players.forEach(p => {
       drawer.addPlayer(
@@ -49,7 +51,7 @@ export class StatsTable implements AsyncAnalyzer {
 
   private getName(account_id: number, playerSummaryTuple): string {
     //shitty to test with hard wired config files
-    const knownPlayer = HansConfig.players.find(p => p.account_id === account_id);
+    const knownPlayer = this.knownPlayers.find(p => p.account_id === account_id);
     if (knownPlayer) {
       return knownPlayer.name;
     } else {

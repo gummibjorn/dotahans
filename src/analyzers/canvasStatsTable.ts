@@ -38,7 +38,7 @@ export class CanvasTableDrawer {
   private yOffset = 0;
 
   constructor(private winner: string, private duration: string, private radiantScore: number, private direScore: number,
-              private radiant_win: boolean) {
+              private radiant_win: boolean, private knownPlayers: Account[]) {
   }
 
   addPlayer(player: TablePlayer) {
@@ -107,7 +107,7 @@ export class CanvasTableDrawer {
   }
 
   private isKnownPlayer(name: string): boolean {
-    return Boolean(HansConfig.players.find(p => p.name === name));
+    return Boolean(this.knownPlayers.find(p => p.name === name));
   }
 
   //first 5 players must be radiant

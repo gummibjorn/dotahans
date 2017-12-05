@@ -12,7 +12,7 @@ export class ItemStatsAnalyzer implements AsyncAnalyzer {
 
   analysisType = AnalysisType.ITEMSTATS;
 
-  constructor(private db: Db) {
+  constructor(private db: Db, private config: HansConfig) {
   }
 
   private itemThresholds = [
@@ -24,7 +24,7 @@ export class ItemStatsAnalyzer implements AsyncAnalyzer {
       return undefined;
     }
 
-    const ourPlayers = matchInfo.players.filter(p => HansConfig.players.find(us => us.account_id === p.account_id));
+    const ourPlayers = matchInfo.players.filter(p => this.config.getPlayers().find(us => us.account_id === p.account_id));
 
     return this.db.collection("itemstats").find().toArray().then(savedStats => {
         const itemStats: ItemStats[] = [];
@@ -61,7 +61,7 @@ export class ItemStatsAnalyzer implements AsyncAnalyzer {
         item = item.split("_")[1];
       }
       return {
-        player: HansConfig.getPlayerNameById(player.account_id),
+        player: this.config.getPlayerNameById(player.account_id),
         item: item,
         amount: currentAmount
       };

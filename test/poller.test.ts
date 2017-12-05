@@ -3,6 +3,7 @@ import {Poller} from "../src/poller";
 import {Observable} from "rxjs/Observable";
 import "rxjs/add/observable/of";
 import "rxjs/add/observable/empty";
+import {HansConfig} from "../src/hans.config";
 
 class MatchManagerSpy {
   onMatchFinished = jest.fn();
@@ -25,7 +26,8 @@ describe("Poller", () => {
   beforeEach(() => {
     matchManager = new MatchManagerSpy();
     dotaApi = new DotaApiStub();
-    poller = new Poller(matchManager, dotaApi);
+    const config = new HansConfig({PLAYERS: "Hans:1234"})
+    poller = new Poller(matchManager, dotaApi, config.getPlayers());
   });
 
   it("Should call onMatchFinished after polling new match", () => {

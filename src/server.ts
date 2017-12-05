@@ -59,25 +59,32 @@ import {Poller} from "./poller";
 import {DotaApi} from "./dota.api";
 import {TelegramRating} from "./telegramRating";
 import {MongoClient} from "mongodb";
+import {HansConfig} from "./hans.config";
+
+const config = new HansConfig();
 
 const messageMatchMap: any = {};
-const dotaApi = new DotaApi();
+const dotaApi = new DotaApi(config.get("STEAM_API_KEY"));
 
-const bot = new TelegramBot(process.env.TELEGRAM_TOKEN, {polling: true});
+const bot = new TelegramBot(config.get("TELEGRAM_TOKEN"), {polling: true});
 bot.on("message", (msg) => {
   console.log(JSON.stringify(msg, undefined, 2));
   bot.sendMessage(msg.chat.id, "Hello dear penis");
 });
 
-const url = process.env.MONGO_URL || "mongodb://localhost:27017/dotahans";
+const url = config.get("MONGO_URL","mongodb://localhost:27017/dotahans");
 MongoClient.connect(url, function(err, db) {
   const matchManager = new MatchManager();
-  const analysisMaker = new AnalysisMaker(matchManager, dotaApi, db);
+  const analysisMaker = new AnalysisMaker(matchManager, dotaApi, db, config);
   const messageSender = new MessageSender(analysisMaker, messageMatchMap, bot);
   const telegramRating = new TelegramRating(analysisMaker, messageSender, bot);
 
-  const poller = new Poller(matchManager, dotaApi);
-  setInterval(() => poller.poll(), 60000);
+  const poller = new Poller(matchManager, dotaApi, config.getPlayers());
+  const interval = Number(config.get("POLL_INTERVAL_MS", "0"))
+  if(interval > 0){
+    console.log(`Polling dota API every ${interval}ms`)
+    setInterval(() => poller.poll(), interval);
+  }
   db.close();
 });
 
@@ -115,10 +122,8 @@ app.use(errorHandler());
 /**
  * Start Express server.
  */
-const port = process.env.PORT || app.get("port");
-app.listen(port, () => {
-  //TODO: add cronjob initiation here
-  console.log(("  App is running at http://localhost:%d in %s mode"), port, app.get("env"));
+app.listen(app.get("port"), () => {
+  console.log(("  App is running at http://localhost:%d in %s mode"), app.get("port"), app.get("env"));
   console.log("  Press CTRL-C to stop\n");
 });
 

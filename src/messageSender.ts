@@ -9,6 +9,7 @@ import {statsPages} from "./analyzers/determinewhowon.analyzer";
 import {duration} from "moment";
 import "moment-duration-format";
 import ItemStats = AnalysisFormat.ItemStats;
+import {HansConfig} from "./hans.config";
 
 
 const makeInlineKeyboardButton = (text, callback_data) => ({text, callback_data});
@@ -27,7 +28,7 @@ export class MessageSender {
   chatToMatch: Map<MessageId, MatchId> = new Map();
   private sendingInProgress: Promise<MessageInfo>;
 
-  constructor(analysisMaker: AnalysisMaker, messageMatchMap: any, private bot: TelegramBot) {
+  constructor(analysisMaker: AnalysisMaker, private config: HansConfig, private bot: TelegramBot) {
     //this.sendMatchComplete(new Analysis(1))
 
     analysisMaker.complete.subscribe((analysis: Analysis) => {
@@ -70,7 +71,7 @@ export class MessageSender {
   }
 
   private async sendStatsTable(buffer: Buffer) {
-    this.bot.sendPhoto(process.env.CHAT_ID, buffer, {
+    this.bot.sendPhoto(this.config.get("CHAT_ID"), buffer, {
       disable_notification: true
     });
   }
@@ -83,7 +84,7 @@ export class MessageSender {
         this.bot.deleteMessage(messageInfo.chatId, messageInfo.messageId + "", {});
       }
       //send new message
-      const message = await this.bot.sendMessage(process.env.CHAT_ID, text, {
+      const message = await this.bot.sendMessage(this.config.get("CHAT_ID"), text, {
         reply_markup: ratingReplyMarkup,
         parse_mode: "markdown",
         disable_web_page_preview: true

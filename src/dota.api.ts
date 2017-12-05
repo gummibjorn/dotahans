@@ -11,8 +11,11 @@ export class DotaApi {
 
   private PLAYER_SUMMARY = "https://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/";
 
+  constructor(private steamApiKey: string){}
+
   getLastMatch(playerId: number): Observable<Match> {
-    const requestProps = {account_id: playerId, key: process.env.STEAM_API_KEY, matches_requested: 1};
+    this.steamApiKey = process.env.STEAM_API_KEY;
+    const requestProps = {account_id: playerId, key: this.steamApiKey, matches_requested: 1};
     return Observable.create(observable => {
       request.get({url: this.MATCH_HISTORY, qs: requestProps}, (err, response, body) => {
         //TODO: error handling
@@ -25,7 +28,7 @@ export class DotaApi {
 
   getItems(): Observable<any> {
     console.log("test")
-    const requestProps = {key: process.env.STEAM_API_KEY};
+    const requestProps = {key: this.steamApiKey};
     return Observable.create(observable => {
       request.get({url: this.ITEMS, qs: requestProps}, (err, response, body) => {
         const parsedBody = JSON.parse(body);
@@ -38,7 +41,7 @@ export class DotaApi {
   getPlayerSummaries(accountIds: number[]): Observable<PlayerSummary[]> {
     const steamid64ident = new BigNumber("76561197960265728");
     const requestProps = {
-      key: process.env.STEAM_API_KEY,
+      key: this.steamApiKey,
       steamids: accountIds.map(a => steamid64ident.add(a)).toString()
     };
 
@@ -56,7 +59,7 @@ export class DotaApi {
   }
 
   getMatchDetails(matchId: number): Observable<DotaApiMatchResult> {
-    const requestProps = {key: process.env.STEAM_API_KEY, match_id: matchId};
+    const requestProps = {key: this.steamApiKey, match_id: matchId};
     return Observable.create(observable => {
       request.get({url: this.MATCH_DETAIL, qs: requestProps}, (err, response, body) => {
         //TODO: error handling

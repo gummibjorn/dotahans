@@ -1,6 +1,6 @@
 import {AnalysisFormat, AnalysisType, Analyzer} from "../hans.types";
 import {DotaApiMatchResult, Player} from "../dota-api";
-import {Account} from "../hans.config";
+import {Account} from "../hans.types";
 import WhoWon = AnalysisFormat.WhoWon;
 import {Analysis} from "../analysis";
 

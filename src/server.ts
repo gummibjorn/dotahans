@@ -58,7 +58,6 @@ import {MessageSender} from "./messageSender";
 import {Poller} from "./poller";
 import {DotaApi} from "./dota.api";
 import {TelegramRating} from "./telegramRating";
-import {MongoClient} from "mongodb";
 import {HansConfig} from "./hans.config";
 
 const config = new HansConfig();
@@ -72,22 +71,17 @@ bot.on("message", (msg) => {
   bot.sendMessage(msg.chat.id, "Hello dear penis");
 });
 
-const url = config.get("MONGO_URL","mongodb://localhost:27017/dotahans");
-MongoClient.connect(url, function(err, db) {
-  const matchManager = new MatchManager();
-  const analysisMaker = new AnalysisMaker(matchManager, dotaApi, db, config);
-  const messageSender = new MessageSender(analysisMaker, messageMatchMap, bot);
-  const telegramRating = new TelegramRating(analysisMaker, messageSender, bot);
+const matchManager = new MatchManager();
+const analysisMaker = new AnalysisMaker(matchManager, dotaApi, config);
+const messageSender = new MessageSender(analysisMaker, messageMatchMap, bot);
+const telegramRating = new TelegramRating(analysisMaker, messageSender, bot);
 
-  const poller = new Poller(matchManager, dotaApi, config.getPlayers());
-  const interval = Number(config.get("POLL_INTERVAL_MS", "0"))
-  if(interval > 0){
-    console.log(`Polling dota API every ${interval}ms`)
-    setInterval(() => poller.poll(), interval);
-  }
-  db.close();
-});
-
+const poller = new Poller(matchManager, dotaApi, config.getPlayers());
+const interval = Number(config.get("POLL_INTERVAL_MS", "0"));
+if (interval > 0) {
+  console.log(`Polling dota API every ${interval}ms`);
+  setInterval(() => poller.poll(), interval);
+}
 
 
 /*

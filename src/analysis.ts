@@ -6,8 +6,6 @@ import {DetermineWhoWon} from "./analyzers/determinewhowon.analyzer";
 import {StatsTable} from "./analyzers/statsTable.analyzer";
 import {DotaApi} from "./dota.api";
 import {PlayerSummaryResolver} from "./analyzers/playerSummaryResolver.analyzer";
-import {ItemStatsAnalyzer} from "./analyzers/itemStats.analyzer";
-import {Db} from "mongodb";
 import {HansConfig} from "./hans.config";
 
 export class Analysis {
@@ -50,7 +48,7 @@ export class AnalysisMaker {
   complete: Subject<Analysis> = new Subject();
   private analysises = new Map<MatchId, Analysis>();
 
-  constructor(matchManager: MatchManager, private dotaApi: DotaApi, private db: Db, private config: HansConfig) {
+  constructor(matchManager: MatchManager, private dotaApi: DotaApi, private config: HansConfig) {
     matchManager.endOfMatch.subscribe(match => {
       this.startSyncAnalysis(match);
       this.startAsyncAnalysis(match);
@@ -82,7 +80,6 @@ export class AnalysisMaker {
   private asyncAnalyzers: AsyncAnalyzer[] = [
     new StatsTable(this.config.getPlayers()),
     new PlayerSummaryResolver(this.dotaApi),
-    new ItemStatsAnalyzer(this.db, this.config)
   ];
 
   private syncAnalyzers: Analyzer[] = [

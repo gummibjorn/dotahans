@@ -1,7 +1,7 @@
 import {MatchId} from "./hans.types";
 import {MatchManager} from "./matchManager";
 import {DotaApi} from "./dota.api";
-import {Account} from "./hans.config";
+import {Account} from "./hans.types";
 
 export class Poller {
   private matches: Set<MatchId> = new Set();

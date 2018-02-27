@@ -1,3 +1,5 @@
+import {Account} from "./hans.types";
+
 export class HansConfig {
   constructor(private env = process.env){}
 
@@ -26,4 +28,3 @@ export class HansConfig {
   }
 }
 
-export type Account = { name: string, account_id: number };

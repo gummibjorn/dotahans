@@ -1,6 +1,6 @@
 import {AnalysisFormat, AnalysisType, AsyncAnalyzer} from "../hans.types";
 import {DotaApiMatchResult} from "../dota-api";
-import {Account} from "../hans.config";
+import {Account} from "../hans.types";
 import {CanvasTableDrawer} from "./canvasStatsTable";
 import * as moment from "moment";
 import "moment-duration-format";
@@ -10,7 +10,8 @@ import WhoWon = AnalysisFormat.WhoWon;
 export class StatsTable implements AsyncAnalyzer {
   analysisType = AnalysisType.STATSTABLE;
 
-  constructor(private knownPlayers: Account[]){}
+  constructor(private knownPlayers: Account[]) {
+  }
 
   analyze(matchInfo: DotaApiMatchResult, analysis: Analysis): Promise<any> {
     if (!this.didDependantAnalyzersRun(analysis) || this.didIRun(analysis)) {

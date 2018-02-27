@@ -14,11 +14,9 @@ export class DotaApi {
   constructor(private steamApiKey: string){}
 
   getLastMatch(playerId: number): Observable<Match> {
-    this.steamApiKey = process.env.STEAM_API_KEY;
     const requestProps = {account_id: playerId, key: this.steamApiKey, matches_requested: 1};
     return Observable.create(observable => {
       request.get({url: this.MATCH_HISTORY, qs: requestProps}, (err, response, body) => {
-        //TODO: error handling
         try {
           const result = JSON.parse(body).result;
           observable.next(result.matches[0]);
@@ -51,7 +49,6 @@ export class DotaApi {
 
     return Observable.create(observable => {
       request.get({url: this.PLAYER_SUMMARY, qs: requestProps}, (err, response, body) => {
-        //TODO: error handling
         try {
           const result = JSON.parse(body).response;
           observable.next(result.players.map(p => {
@@ -70,7 +67,6 @@ export class DotaApi {
     const requestProps = {key: this.steamApiKey, match_id: matchId};
     return Observable.create(observable => {
       request.get({url: this.MATCH_DETAIL, qs: requestProps}, (err, response, body) => {
-        //TODO: error handling
         try {
           const match = JSON.parse(body).result;
           observable.next(match);

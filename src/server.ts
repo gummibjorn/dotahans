@@ -62,7 +62,6 @@ import {HansConfig} from "./hans.config";
 
 const config = new HansConfig();
 
-const messageMatchMap: any = {};
 const dotaApi = new DotaApi(config.get("STEAM_API_KEY"));
 
 const bot = new TelegramBot(config.get("TELEGRAM_TOKEN"), {polling: true});
@@ -73,7 +72,7 @@ bot.on("message", (msg) => {
 
 const matchManager = new MatchManager();
 const analysisMaker = new AnalysisMaker(matchManager, dotaApi, config);
-const messageSender = new MessageSender(analysisMaker, messageMatchMap, bot);
+const messageSender = new MessageSender(analysisMaker, config, bot);
 const telegramRating = new TelegramRating(analysisMaker, messageSender, bot);
 
 const poller = new Poller(matchManager, dotaApi, config.getPlayers());

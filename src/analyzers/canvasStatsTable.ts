@@ -1,5 +1,5 @@
 import {createCanvas, loadImage} from "canvas";
-import {HansConfig} from "../hans.config";
+import {Account} from "../hans.types";
 
 interface TablePlayer {
   hero: number;

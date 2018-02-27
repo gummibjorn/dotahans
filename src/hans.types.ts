@@ -6,6 +6,8 @@ export class GameStateIntegrationMessage {
   match_id: number;
 }
 
+export type Account = { name: string, account_id: number };
+
 export type MatchId = number;
 export type MessageId = number;
 export type UserId = number;

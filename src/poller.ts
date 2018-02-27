@@ -5,6 +5,7 @@ import {Account} from "./hans.config";
 
 export class Poller {
   private matches: Set<MatchId> = new Set();
+
   constructor(private matchManager: MatchManager, private dotaApi: DotaApi, private accounts: Account[]) {
   }
 
@@ -17,10 +18,20 @@ export class Poller {
             this.dotaApi.getMatchDetails(match.match_id).subscribe(
               matchDetails => {
                 this.matchManager.onMatchFinished(matchDetails);
+              },
+              error => {
+                // be smarter
+                console.log(error);
               }
             );
           }
-        });
+        },
+
+        error => {
+          // be smarter
+          console.log(error);
+        }
+      );
     });
   }
 }

@@ -19,9 +19,13 @@ export class DotaApi {
     return Observable.create(observable => {
       request.get({url: this.MATCH_HISTORY, qs: requestProps}, (err, response, body) => {
         //TODO: error handling
-        const result = JSON.parse(body).result;
-        observable.next(result.matches[0]);
-        observable.complete();
+        try {
+          const result = JSON.parse(body).result;
+          observable.next(result.matches[0]);
+          observable.complete();
+        } catch (e) {
+          observable.error(e);
+        }
       });
     });
   }
@@ -48,12 +52,16 @@ export class DotaApi {
     return Observable.create(observable => {
       request.get({url: this.PLAYER_SUMMARY, qs: requestProps}, (err, response, body) => {
         //TODO: error handling
-        const result = JSON.parse(body).response;
-        observable.next(result.players.map(p => {
-          p.steamid3 = new BigNumber(p.steamid).minus(steamid64ident).toNumber();
-          return p;
-        }));
-        observable.complete();
+        try {
+          const result = JSON.parse(body).response;
+          observable.next(result.players.map(p => {
+            p.steamid3 = new BigNumber(p.steamid).minus(steamid64ident).toNumber();
+            return p;
+          }));
+          observable.complete();
+        } catch (e) {
+          observable.error(e);
+        }
       });
     });
   }
@@ -63,11 +71,16 @@ export class DotaApi {
     return Observable.create(observable => {
       request.get({url: this.MATCH_DETAIL, qs: requestProps}, (err, response, body) => {
         //TODO: error handling
-        const match = JSON.parse(body).result;
-        observable.next(match);
-        observable.complete();
+        try {
+          const match = JSON.parse(body).result;
+          observable.next(match);
+          observable.complete();
+        } catch (e) {
+          observable.error(e);
+        }
       });
     });
+
   }
 }
 

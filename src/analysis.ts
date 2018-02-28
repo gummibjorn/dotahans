@@ -78,8 +78,8 @@ export class AnalysisMaker {
   }
 
   private asyncAnalyzers: AsyncAnalyzer[] = [
-    new StatsTable(this.config.getPlayers()),
     new PlayerSummaryResolver(this.dotaApi),
+    new StatsTable(this.config.getPlayers()),
   ];
 
   private syncAnalyzers: Analyzer[] = [

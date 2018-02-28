@@ -21,15 +21,14 @@ export class Poller {
               },
               error => {
                 // be smarter
-                console.log(error);
+                console.error("Error occurred while accessing dota API");
               }
             );
           }
         },
-
         error => {
           // be smarter
-          console.log(error);
+          console.error("Error occurred while accessing dota API");
         }
       );
     });

@@ -16,11 +16,14 @@ export class PlayerSummaryResolver implements AsyncAnalyzer {
       return undefined;
     }
     return this.dotaApi.getPlayerSummaries(matchInfo.players.map(p => p.account_id)).toPromise().then(
-      players => ({
-        playerSummaries: players.map(p => {
-          return {account_id: p.steamid3, playerSummary: p};
-        })
-      }));
+      players => {
+        console.log(players);
+        return {
+          playerSummaries: players.map(p => {
+            return {account_id: p.steamid3, playerSummary: p};
+          })
+        };
+      });
   }
 
   private didIRun(analysis: Analysis): boolean {

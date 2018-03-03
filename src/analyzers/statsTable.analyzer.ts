@@ -23,8 +23,6 @@ export class StatsTable implements AsyncAnalyzer {
     const didWeWin = (analysis.get(AnalysisType.WHOWON) as WhoWon).won;
     const playerSummaryTuples = analysis.get(AnalysisType.NAMERESOLVER).playerSummaries;
 
-    playerSummaryTuples.forEach(p => console.log(p.playerSummary.personaname));
-
     const winMessage = didWeWin ? "Mir händ gwunne" : "Ufs Dach becho";
 
     const drawer = new CanvasTableDrawer(winMessage, duration, matchInfo.radiant_score, matchInfo.dire_score, matchInfo.radiant_win, this.knownPlayers);

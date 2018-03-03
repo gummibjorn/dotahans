@@ -100,7 +100,11 @@ export class AnalysisMaker {
 
   private startAsyncAnalysis(match: DotaApiMatchResult) {
     this.runAsyncAnalyzers(match, this.analysises.get(match.match_id));
-    this.complete.subscribe(analysis => this.runAsyncAnalyzers(match, analysis) );
+    this.complete.subscribe(analysis => {
+      if (analysis.getMatchId() === match.match_id) {
+        this.runAsyncAnalyzers(match, analysis);
+      }
+    });
   }
 
   private startSyncAnalysis(match: DotaApiMatchResult) {

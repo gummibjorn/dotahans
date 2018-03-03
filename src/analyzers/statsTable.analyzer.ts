@@ -18,13 +18,19 @@ export class StatsTable implements AsyncAnalyzer {
       return undefined;
     }
 
+
     const duration = moment.duration(matchInfo.duration, "seconds").format("hh:mm:ss");
     const didWeWin = (analysis.get(AnalysisType.WHOWON) as WhoWon).won;
     const playerSummaryTuples = analysis.get(AnalysisType.NAMERESOLVER).playerSummaries;
+
+    if (!playerSummaryTuples.length) {
+      return undefined;
+    }
+
+    console.log("playerssummaries in statstable", playerSummaryTuples);
+
     const winMessage = didWeWin ? "Mir händ gwunne" : "Ufs Dach becho";
     const drawer = new CanvasTableDrawer(winMessage, duration, matchInfo.radiant_score, matchInfo.dire_score, matchInfo.radiant_win, this.knownPlayers);
-
-    console.log('playerSummaries in Statstable: ', playerSummaryTuples);
 
     matchInfo.players.forEach(p => {
       drawer.addPlayer(

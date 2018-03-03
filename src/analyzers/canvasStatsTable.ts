@@ -133,8 +133,6 @@ export class CanvasTableDrawer {
     ctx.drawImage(image, this.xOffset, this.yOffset, player_image_width, line_height);
     this.xOffset += player_name_xOffset;
 
-    console.log(player.name);
-
     let playerName = "";
     let i = 0;
     while (ctx.measureText(playerName).width < player_name_width && player.name.length > i) {

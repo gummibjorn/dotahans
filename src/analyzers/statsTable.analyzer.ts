@@ -23,11 +23,10 @@ export class StatsTable implements AsyncAnalyzer {
     const didWeWin = (analysis.get(AnalysisType.WHOWON) as WhoWon).won;
     const playerSummaryTuples = analysis.get(AnalysisType.NAMERESOLVER).playerSummaries;
 
-    if (!playerSummaryTuples.length) {
-      return undefined;
-    }
+    playerSummaryTuples.forEach(p => console.log(p.playerSummary.personaname));
 
     const winMessage = didWeWin ? "Mir händ gwunne" : "Ufs Dach becho";
+
     const drawer = new CanvasTableDrawer(winMessage, duration, matchInfo.radiant_score, matchInfo.dire_score, matchInfo.radiant_win, this.knownPlayers);
 
     matchInfo.players.forEach(p => {
@@ -38,7 +37,7 @@ export class StatsTable implements AsyncAnalyzer {
           deaths: p.deaths,
           assists: p.assists,
           level: p.level,
-          name: this.getName(p.account_id, playerSummaryTuples.find(tuple => tuple.account_id === p.account_id)),
+          name: this.getName(p.account_id, playerSummaryTuples.find(tuple => tuple.account_id == p.account_id)),
         }
       );
     });

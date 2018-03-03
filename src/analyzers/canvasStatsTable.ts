@@ -118,13 +118,13 @@ export class CanvasTableDrawer {
     ctx.fillStyle = this.toggleFillColor();
     ctx.fill();
 
-    if (this.isKnownPlayer(player.name)) {
-      ctx.beginPath();
-      ctx.strokeStyle = "white";
-      ctx.lineWidth = 8;
-      ctx.strokeRect(this.xOffset + player_image_width + 4, this.yOffset, width - player_image_width - 8, line_height - 2);
-      ctx.fill();
-    }
+    // if (this.isKnownPlayer(player.name)) {
+    //   ctx.beginPath();
+    //   ctx.strokeStyle = "white";
+    //   ctx.lineWidth = 8;
+    //   ctx.strokeRect(this.xOffset + player_image_width + 4, this.yOffset, width - player_image_width - 8, line_height - 2);
+    //   ctx.fill();
+    // }
 
     ctx.font = `${player_text_font_size}px Arial`;
     ctx.textBaseline = "middle";
@@ -133,6 +133,7 @@ export class CanvasTableDrawer {
     ctx.drawImage(image, this.xOffset, this.yOffset, player_image_width, line_height);
     this.xOffset += player_name_xOffset;
 
+    console.log(player.name);
 
     let playerName = "";
     let i = 0;

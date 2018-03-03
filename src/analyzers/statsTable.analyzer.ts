@@ -27,8 +27,6 @@ export class StatsTable implements AsyncAnalyzer {
       return undefined;
     }
 
-    console.log("playerssummaries in statstable", playerSummaryTuples);
-
     const winMessage = didWeWin ? "Mir händ gwunne" : "Ufs Dach becho";
     const drawer = new CanvasTableDrawer(winMessage, duration, matchInfo.radiant_score, matchInfo.dire_score, matchInfo.radiant_win, this.knownPlayers);
 

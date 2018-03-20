@@ -13,6 +13,7 @@ import * as path from "path";
 import * as passport from "passport";
 import expressValidator = require("express-validator");
 import * as TelegramBot from "node-telegram-bot-api";
+import * as Redis from 'ioredis';
 
 /**
  * Load environment variables from .env file, where API keys and passwords are configured.
@@ -64,6 +65,8 @@ const config = new HansConfig();
 
 const dotaApi = new DotaApi(config.get("STEAM_API_KEY"));
 
+const redis = new Redis(config.get('REDIS_URL'));
+
 const bot = new TelegramBot(config.get("TELEGRAM_TOKEN"), {polling: true});
 bot.on("message", (msg) => {
   console.log(JSON.stringify(msg, undefined, 2));
@@ -75,11 +78,13 @@ const analysisMaker = new AnalysisMaker(matchManager, dotaApi, config);
 const messageSender = new MessageSender(analysisMaker, config, bot);
 const telegramRating = new TelegramRating(analysisMaker, messageSender, bot);
 
-const poller = new Poller(matchManager, dotaApi, config.getPlayers());
+const poller = new Poller(matchManager, dotaApi, config.getPlayers(), redis);
 const interval = Number(config.get("POLL_INTERVAL_MS", "0"));
 if (interval > 0) {
   console.log(`Polling dota API every ${interval}ms`);
   setInterval(() => poller.poll(), interval);
+} else {
+  console.debug("No POLL_INTERVAL_MS is 0, not polling");
 }
 
 

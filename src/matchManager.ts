@@ -3,17 +3,6 @@ import {Subject} from "rxjs/Subject";
 import {GameStateIntegrationMessage, MatchId} from "./hans.types";
 import {DotaApiMatchResult} from "./dota-api";
 
-/**
- * GET /
- * Home page.
- */
-export let index = (req: Request, res: Response) => {
-  res.render("home", {
-    title: "Home"
-  });
-};
-
-
 export class MatchManager {
   private matches = new Map<MatchId, DotaApiMatchResult>();
   endOfMatch = new Subject<DotaApiMatchResult>();

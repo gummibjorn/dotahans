@@ -56,7 +56,7 @@ app.use(express.static(path.join(__dirname, "public"), {maxAge: 31557600000}));
 import {AnalysisMaker} from "./analysis";
 import {MatchManager} from "./matchManager";
 import {MessageSender} from "./messageSender";
-import {Poller} from "./poller";
+import {matchStream} from "./poller";
 import {DotaApi} from "./dota.api";
 import {TelegramRating} from "./telegramRating";
 import {HansConfig} from "./hans.config";
@@ -78,14 +78,25 @@ const analysisMaker = new AnalysisMaker(matchManager, dotaApi, config);
 const messageSender = new MessageSender(analysisMaker, config, bot);
 const telegramRating = new TelegramRating(analysisMaker, messageSender, bot);
 
-const poller = new Poller(matchManager, dotaApi, config.getPlayers(), redis);
-const interval = Number(config.get("POLL_INTERVAL_MS", "0"));
-if (interval > 0) {
-  console.log(`Polling dota API every ${interval}ms`);
-  setInterval(() => poller.poll(), interval);
-} else {
-  console.debug("No POLL_INTERVAL_MS is 0, not polling");
-}
+// const poller = new Poller(matchManager, dotaApi, config.getPlayers(), redis);
+// const interval = Number(config.get("POLL_INTERVAL_MS", "0"));
+// if (interval > 0) {
+//   console.log(`Polling dota API every ${interval}ms`);
+//   setInterval(() => poller.poll(), interval);
+// } else {
+//   console.debug("No POLL_INTERVAL_MS is 0, not polling");
+// }
+
+// prod mode
+let pollIntervalSeconds = Number(config.get("POLL_INTERVAL_MS", "0"));
+//matchStream(dotaApi, config.getPlayers(), redis, pollIntervalSeconds).subscribe(matchManager.onMatchFinished);
+
+//dev mode
+matchStream(dotaApi, config.getPlayers(), redis, 0).subscribe((match)=>{
+  console.log("Hi ", match);
+}, ()=>{}, ()=>{
+  console.log("Done");
+});
 
 
 /*

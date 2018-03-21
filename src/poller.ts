@@ -3,41 +3,41 @@ import {MatchManager} from "./matchManager";
 import {DotaApi} from "./dota.api";
 import {Account} from "./hans.types";
 import {Redis} from "ioredis";
+import {Observable} from "rxjs/Observable";
+import {DotaApiMatchResult, Match} from "./dota-api";
+import 'rxjs/add/operator/first';
 
 const redisKey = "poller_matches"
-export class Poller {
 
-  constructor(private matchManager: MatchManager, private dotaApi: DotaApi, private accounts: Account[], private redis: Redis) {
-  }
-
-  async hasMatch (id):Promise<0|1>{
-    return this.redis.sismember(redisKey, id);
-  }
-
-  async poll() {
-    this.accounts.forEach(async account => {
-      this.dotaApi.getLastMatch(account.account_id).subscribe(
-        async match => {
-          if (! await this.hasMatch(match.match_id)) {
-            this.redis.sadd(redisKey, match.match_id);
-            this.dotaApi.getMatchDetails(match.match_id).subscribe(
-              matchDetails => {
-                this.matchManager.onMatchFinished(matchDetails);
-              },
-              error => {
-                // be smarter
-                console.error("Error occurred while accessing dota API");
-              }
-            );
+// might use this to handle backoff: https://www.npmjs.com/package/rx-polling
+export function matchStream(dotaApi: DotaApi, accounts: Account[], redis: Redis, pollIntervalSeconds: number) : Observable<DotaApiMatchResult>{
+  function poll(observable) {
+    return async function () {
+      for (let account of accounts) {
+        try {
+          console.debug(`Looking up matches for ${account.name}`)
+          const match = await dotaApi.getLastMatch(account.account_id).first().toPromise();
+          if (!(await redis.sismember(redisKey, match.match_id))) {
+            observable.next(await dotaApi.getMatchDetails(match.match_id));
+            redis.sadd(redisKey, match.match_id);
           } else {
-            console.debug(`Skipping match ${match.match_id}, already known.`)
+            console.debug(`Already saw match ${match.match_id}`)
           }
-        },
-        error => {
-          // be smarter
-          console.error("Error occurred while accessing dota API");
+        } catch (e) {
+          console.warn("Error getting match", e);
         }
-      );
+      }
+    }
+  }
+
+  if(pollIntervalSeconds === 0){
+    return Observable.create(async observable => {
+      await poll(observable)();
+      observable.complete();
+    });
+  } else {
+    return Observable.create(observable => {
+      setInterval(poll(observable), pollIntervalSeconds * 1000)
     });
   }
 }

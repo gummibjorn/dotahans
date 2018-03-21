@@ -1,0 +1,14 @@
+extends layout
+
+block content
+  h1#excuse Oh no!
+  button#another Another one
+  script.
+    var target = document.getElementById('excuse');
+    function excuse(){
+      fetch('/excuse')
+        .then(res => res.text())
+        .then(res => target.innerHTML = res);
+    }
+    excuse();
+    document.getElementById('another').onclick = excuse;

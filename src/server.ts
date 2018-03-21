@@ -45,7 +45,6 @@ app.use(bodyParser.urlencoded({extended: true}));
 app.use(expressValidator());
 app.use(passport.initialize());
 app.use(passport.session());
-app.use(flash());
 app.use(lusca.xframe("SAMEORIGIN"));
 app.use(lusca.xssProtection(true));
 app.use(express.static(path.join(__dirname, "public"), {maxAge: 31557600000}));
@@ -121,7 +120,7 @@ app.get("/", dashboard.index);
 /**
  * API examples routes.
  */
-app.get("/api", apiController.getApi);
+app.get("/excuse", apiController.excuse);
 
 /**
  * Error Handler. Provides full stack - remove for production

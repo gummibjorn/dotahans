@@ -88,16 +88,20 @@ const telegramRating = new TelegramRating(analysisMaker, messageSender, bot);
 // }
 
 // prod mode
-let pollIntervalSeconds = Number(config.get("POLL_INTERVAL_MS", "0"));
-//matchStream(dotaApi, config.getPlayers(), redis, pollIntervalSeconds).subscribe(matchManager.onMatchFinished);
-
+if(config.get("DEBUG", "FALSE") !== "FALSE"){
+  let pollIntervalSeconds = Number(config.get("POLL_INTERVAL_MS", "0"));
+  matchStream(dotaApi, config.getPlayers(), redis, pollIntervalSeconds).subscribe(matchManager.onMatchFinished);
+} else {
 //dev mode
-matchStream(dotaApi, config.getPlayers(), redis, 0).subscribe((match)=>{
-  console.log("Hi ", match);
-}, ()=>{}, ()=>{
-  console.log("Done");
-});
+  redis.flushall();
+  dotaApi.getMatchDetails(3791610235).subscribe(matchManager.onMatchFinished);
 
+// matchStream(dotaApi, config.getPlayers(), redis, 0).subscribe((match)=>{
+//   console.log("Hi ", match);
+// }, ()=>{}, ()=>{
+//   console.log("Done");
+// });
+}
 
 /*
 updateGame(req, res) {

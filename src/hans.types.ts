@@ -17,7 +17,8 @@ export enum AnalysisType {
   NAMERESOLVER,
   STATSTABLE,
   WHOWON,
-  RATING
+  RATING,
+  EXCUSE
 }
 
 export class TelegramMessage {
@@ -45,6 +46,9 @@ export declare namespace AnalysisFormat {
     ranked: boolean;
     players: string[];
     matchId: MatchId;
+  }
+  interface Excuse {
+    excuse: string;
   }
   interface ItemStats {
     player: string;

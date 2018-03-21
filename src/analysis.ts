@@ -7,6 +7,7 @@ import {StatsTable} from "./analyzers/statsTable.analyzer";
 import {DotaApi} from "./dota.api";
 import {PlayerSummaryResolver} from "./analyzers/playerSummaryResolver.analyzer";
 import {HansConfig} from "./hans.config";
+import {ExcuseGeneratorAnalyzer} from "./analyzers/excuse.analyzer";
 
 export class Analysis {
   private parts: Map<AnalysisType, any> = new Map();
@@ -83,7 +84,8 @@ export class AnalysisMaker {
   ];
 
   private syncAnalyzers: Analyzer[] = [
-    new DetermineWhoWon(this.config.getPlayers())
+    new DetermineWhoWon(this.config.getPlayers()),
+    new ExcuseGeneratorAnalyzer()
   ];
 
   private runAsyncAnalyzers(match: DotaApiMatchResult, analysis: Analysis) {

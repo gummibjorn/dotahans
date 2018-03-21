@@ -55,46 +55,42 @@ app.use(express.static(path.join(__dirname, "public"), {maxAge: 31557600000}));
  */
 import {AnalysisMaker} from "./analysis";
 import {MatchManager} from "./matchManager";
-import {MessageSender} from "./messageSender";
+import {TelegramMessageSender} from "./sender/telegramMessageSender";
 import {matchStream} from "./poller";
 import {DotaApi} from "./dota.api";
 import {TelegramRating} from "./telegramRating";
 import {HansConfig} from "./hans.config";
+import {format} from "./sender/messageFormatter";
 
 const config = new HansConfig();
-
 const dotaApi = new DotaApi(config.get("STEAM_API_KEY"));
-
 const redis = new Redis(config.get('REDIS_URL'));
-
-const bot = new TelegramBot(config.get("TELEGRAM_TOKEN"), {polling: true});
-bot.on("message", (msg) => {
-  console.log(JSON.stringify(msg, undefined, 2));
-  bot.sendMessage(msg.chat.id, "Hello dear penis");
-});
 
 const matchManager = new MatchManager();
 const analysisMaker = new AnalysisMaker(matchManager, dotaApi, config);
-const messageSender = new MessageSender(analysisMaker, config, bot);
-const telegramRating = new TelegramRating(analysisMaker, messageSender, bot);
 
-// const poller = new Poller(matchManager, dotaApi, config.getPlayers(), redis);
-// const interval = Number(config.get("POLL_INTERVAL_MS", "0"));
-// if (interval > 0) {
-//   console.log(`Polling dota API every ${interval}ms`);
-//   setInterval(() => poller.poll(), interval);
-// } else {
-//   console.debug("No POLL_INTERVAL_MS is 0, not polling");
-// }
+if(config.get("DEBUG", "FALSE") === "FALSE"){
+  console.log("PRODUCTION MODE");
+  const bot = new TelegramBot(config.get("TELEGRAM_TOKEN"), {polling: true});
+  bot.on("message", (msg) => {
+    console.log(JSON.stringify(msg, undefined, 2));
+    bot.sendMessage(msg.chat.id, "Hello");
+  });
+  const messageSender = new TelegramMessageSender(analysisMaker, config, bot);
+  const telegramRating = new TelegramRating(analysisMaker, messageSender, bot);
 
-// prod mode
-if(config.get("DEBUG", "FALSE") !== "FALSE"){
   let pollIntervalSeconds = Number(config.get("POLL_INTERVAL_MS", "0"));
   matchStream(dotaApi, config.getPlayers(), redis, pollIntervalSeconds).subscribe(matchManager.onMatchFinished);
+  console.log(`Polling dota API every ${pollIntervalSeconds}s`);
+
 } else {
-//dev mode
+  console.log("DEV MODE");
+  analysisMaker.complete.subscribe(analysis => console.log(format(analysis)), console.error);
   redis.flushall();
-  dotaApi.getMatchDetails(3791610235).subscribe(matchManager.onMatchFinished);
+  dotaApi.getMatchDetails(3791610235).subscribe(match => {
+    console.log("GOT THE MATCH");
+    matchManager.onMatchFinished(match);
+  });
 
 // matchStream(dotaApi, config.getPlayers(), redis, 0).subscribe((match)=>{
 //   console.log("Hi ", match);

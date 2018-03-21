@@ -1,5 +1,5 @@
 import {} from "jest";
-import {whoWon} from "../src/messageSender";
+import {whoWon} from "../src/sender/messageFormatter";
 
 describe("WhoWonFormat", () => {
   it("should format a win", () => {

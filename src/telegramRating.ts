@@ -1,6 +1,6 @@
 import * as emoji from "node-emoji"
 import {AnalysisMaker} from "./analysis";
-import {MessageSender} from "./messageSender";
+import {TelegramMessageSender} from "./sender/telegramMessageSender";
 import {AnalysisType, MatchId, MessageId, UserId} from "./hans.types";
 import * as TelegramBot from "node-telegram-bot-api";
 import {CallbackQuery} from "node-telegram-bot-api";
@@ -15,7 +15,7 @@ export class TelegramRating {
 
   private matchRatings: Map<MatchId, Map<UserId, string>> = new Map();
 
-  constructor(analysisMaker : AnalysisMaker, messageSender : MessageSender, bot: TelegramBot){
+  constructor(analysisMaker : AnalysisMaker, messageSender : TelegramMessageSender, bot: TelegramBot){
 
     bot.on('callback_query', (msg : CallbackQuery) => {
       //console.log(JSON.stringify(msg, null, 2));

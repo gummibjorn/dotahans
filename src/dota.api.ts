@@ -64,6 +64,7 @@ export class DotaApi {
   }
 
   getMatchDetails(matchId: number): Observable<DotaApiMatchResult> {
+    console.log("Get match details for: " + matchId);
     const requestProps = {key: this.steamApiKey, match_id: matchId};
     return Observable.create(observable => {
       request.get({url: this.MATCH_DETAIL, qs: requestProps}, (err, response, body) => {

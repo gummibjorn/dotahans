@@ -3,6 +3,7 @@ import {DotaApiMatchResult, Player} from "../dota-api";
 import {Analysis} from "../analysis";
 import Excuse = AnalysisFormat.Excuse;
 import {heroes as heroList} from '../data/heroes';
+import WhoWon = AnalysisFormat.WhoWon;
 
 function all(s){
   return [`our ${s}`, `their ${s}`];
@@ -69,10 +70,10 @@ export class ExcuseGeneratorAnalyzer implements Analyzer {
 
 
   analyze(matchInfo: DotaApiMatchResult, analysis: Analysis): Excuse {
-    const players = analysis.get(AnalysisType.WHOWON).players;
+    const whowon = analysis.get(AnalysisType.WHOWON) as WhoWon;
     const heroes = matchInfo.players.map(p => getHeroName(p.hero_id));
-    const generator = new ExcuseGenerator(heroes, players);
-    return {excuse: generator.randomExcuse()};
+    const generator = new ExcuseGenerator(heroes, whowon.players);
+    return {excuse: whowon.won ? "" : generator.randomExcuse()};
   }
 
 }

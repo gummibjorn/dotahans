@@ -70,7 +70,16 @@ const analysisMaker = new AnalysisMaker(matchManager, dotaApi, config);
 
 if(config.get("DEBUG", "FALSE") === "FALSE"){
   console.log("PRODUCTION MODE");
-  const bot = new TelegramBot(config.get("TELEGRAM_TOKEN"), {polling: true});
+  const token = config.get("TELEGRAM_TOKEN");
+  const url = config.get("PUBLIC_URL");
+  const bot = new TelegramBot(token);
+  bot.setWebHook(`${url}/bot${token}`);
+  app.post(`/bot${token}`, (req, res) => {
+    bot.processUpdate(req.body);
+    res.sendStatus(200);
+  });
+
+
   bot.on("message", (msg) => {
     console.log(JSON.stringify(msg, undefined, 2));
     bot.sendMessage(msg.chat.id, "Hello");
@@ -78,15 +87,15 @@ if(config.get("DEBUG", "FALSE") === "FALSE"){
   const messageSender = new TelegramMessageSender(analysisMaker, config, bot);
   const telegramRating = new TelegramRating(analysisMaker, messageSender, bot);
 
-  let pollIntervalSeconds = Number(config.get("POLL_INTERVAL_MS", "0"));
-  matchStream(dotaApi, config.getPlayers(), redis, pollIntervalSeconds).subscribe(matchManager.onMatchFinished);
+  let pollIntervalSeconds = Number(config.get("POLL_INTERVAL_MS", "0")) / 1000;
+  matchStream(dotaApi, config.getPlayers(), redis, pollIntervalSeconds).subscribe(match => matchManager.onMatchFinished(match));
   console.log(`Polling dota API every ${pollIntervalSeconds}s`);
 
 } else {
   console.log("DEV MODE");
   analysisMaker.complete.subscribe(analysis => console.log(format(analysis)), console.error);
   redis.flushall();
-  dotaApi.getMatchDetails(3791610235).subscribe(match => {
+  dotaApi.getMatchDetails(3793324870).subscribe(match => {
     console.log("GOT THE MATCH");
     matchManager.onMatchFinished(match);
   });
@@ -121,6 +130,13 @@ app.get("/", dashboard.index);
  * API examples routes.
  */
 app.get("/excuse", apiController.excuse);
+
+app.get(`/check/:id`, (req, res) => {
+  dotaApi.getMatchDetails(req.params.id).subscribe(match => {
+    matchManager.onMatchFinished(match);
+    res.sendStatus(200);
+  });
+});
 
 /**
  * Error Handler. Provides full stack - remove for production

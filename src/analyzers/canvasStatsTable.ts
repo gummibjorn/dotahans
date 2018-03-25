@@ -112,24 +112,25 @@ export class CanvasTableDrawer {
 
   //first 5 players must be radiant
   drawPlayer(ctx, player: TablePlayer, index: number, image) {
+    let fgColor = index < 5 ? radiantColor : direColor;
 
     ctx.beginPath();
     ctx.rect(this.xOffset, this.yOffset, width, line_height);
     ctx.fillStyle = this.toggleFillColor();
     ctx.fill();
 
-    // if (this.isKnownPlayer(player.name)) {
-    //   ctx.beginPath();
-    //   ctx.strokeStyle = "white";
-    //   ctx.lineWidth = 8;
-    //   ctx.strokeRect(this.xOffset + player_image_width + 4, this.yOffset, width - player_image_width - 8, line_height - 2);
-    //   ctx.fill();
-    // }
+    if (this.isKnownPlayer(player.name)) {
+      ctx.beginPath();
+      ctx.strokeStyle = fgColor;
+      ctx.lineWidth = 8;
+      ctx.strokeRect(this.xOffset + player_image_width + 4, this.yOffset + 4, 1, line_height - 4);
+      ctx.fill();
+    }
 
     ctx.font = `${player_text_font_size}px Arial`;
     ctx.textBaseline = "middle";
     ctx.textAlign = "start";
-    ctx.fillStyle = index < 5 ? radiantColor : direColor;
+    ctx.fillStyle = fgColor;
     ctx.drawImage(image, this.xOffset, this.yOffset, player_image_width, line_height);
     this.xOffset += player_name_xOffset;
 

@@ -22,6 +22,7 @@ const subject = [
   ...both("Courier"),
   ...both("Ancient"),
   ...both("Base"),
+  ...both("team"),
   "the secret shop",
   "the side shop",
   "the shop keeper",
@@ -48,8 +49,11 @@ const subject = [
   "valve",
   "volvo",
   "Gaben",
+  "Icefrog",
   "the russians",
   "Dota Plus",
+  "all chat",
+  "Twitch chat",
 ];
 
 const cause = [
@@ -76,6 +80,12 @@ const cause = [
   "bought obsever wards",
   "bought sentries",
   "didn't buy any wards",
+  "got fountain dived",
+  "fountain dived",
+  "got stream sniped",
+  "was using map hacks",
+  "didn't read the patch notes",
+  "had Aghanim's",
   //marios
   "had high ping",
   "dropped frames",

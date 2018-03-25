@@ -99,7 +99,7 @@ const telegramRating = new TelegramRating(analysisMaker, messageSender, bot);
 
 if(!isDebug){
   console.log("PRODUCTION MODE");
-  bot.sendMessage(Number(config.get("CHAT_ID")), "Hello");
+  // bot.sendMessage(Number(config.get("CHAT_ID")), "Hello");
 
 
   let pollIntervalSeconds = Number(config.get("POLL_INTERVAL_MS", "0")) / 1000;

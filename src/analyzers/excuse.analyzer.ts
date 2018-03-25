@@ -5,14 +5,23 @@ import Excuse = AnalysisFormat.Excuse;
 import {heroes as heroList} from '../data/heroes';
 import WhoWon = AnalysisFormat.WhoWon;
 
-function all(s){
+function both(s){
   return [`our ${s}`, `their ${s}`];
 }
+
+const prep = [
+  "We lost because",
+  "We only lost because",
+  "They won because",
+  "They only won because",
+]
+
 const subject = [
+  //mechanics
   "Roshan",
-  ...all("Courier"),
-  ...all("Ancient"),
-  ...all("Base"),
+  ...both("Courier"),
+  ...both("Ancient"),
+  ...both("Base"),
   "the secret shop",
   "the side shop",
   "the shop keeper",
@@ -23,24 +32,36 @@ const subject = [
   "the jungle",
   "our mid T1",
   "their top T3",
+  "a bounty rune",
+  "a set of brown boots",
+  //people
   "%HERO%",
   "%PLAYER%",
   "%PLAYER%'s mum",
   "%PLAYER%'s PC",
   "%PLAYER%'s mouse",
   "%PLAYER%'s keyboard",
-  "a bounty rune",
+  "%PLAYER%'s chair",
+  "%PLAYER%'s monitor",
+  "%PLAYER%'s brain",
+  "%PLAYER%'s Twitter followers",
+  "valve",
+  "volvo",
+  "Gaben",
+  "the russians",
+  "Dota Plus",
 ];
 
 const cause = [
   //generic flames
-  "fed Drow",
   "fed %SUBJECT%",
+  "reported %SUBJECT%",
   "was garbage",
   "is overpowered",
   "is underpowered",
   "was AFK",
   "was jungling",
+  "was roaming",
   "was harassing %SUBJECT%",
   "was harassed by %SUBJECT%",
   "had a free lane",
@@ -49,10 +70,22 @@ const cause = [
   "bought back",
   "didn't buy back",
   "had a rapier",
+  "fought %SUBJECT% 1v1",
+  "used smokes",
+  "used dust",
+  "bought obsever wards",
+  "bought sentries",
+  "didn't buy any wards",
   //marios
   "had high ping",
   "dropped frames",
+  "had packet loss",
   "forgot to turn off the lights",
+  //franks
+  '"found" %SUBJECT',
+  "solo pushed %SUBJECT",
+  //danis
+  "fed Drow",
 ];
 
 
@@ -113,6 +146,6 @@ export class ExcuseGenerator{
   }
 
   randomExcuse() : string {
-    return `We only lost because ${this.pickRandom(subject)} ${this.pickRandom(cause)}.`;
+    return `${this.pickRandom(prep)} ${this.pickRandom(subject)} ${this.pickRandom(cause)}.`;
   }
 }

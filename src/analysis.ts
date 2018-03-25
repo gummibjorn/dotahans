@@ -84,7 +84,7 @@ export class AnalysisMaker {
   ];
 
   private syncAnalyzers: Analyzer[] = [
-    new DetermineWhoWon(this.config.getPlayers()),
+    new DetermineWhoWon(this.config.getPlayers(), this.config.getGoons()),
     new ExcuseGeneratorAnalyzer()
   ];
 

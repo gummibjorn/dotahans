@@ -36,7 +36,7 @@ export const gameModes = {
 export class DetermineWhoWon implements Analyzer {
   analysisType = AnalysisType.WHOWON;
 
-  constructor(private players: Account[]){}
+  constructor(private players: Account[], private goons: Account[]){}
 
   analyze(matchInfo: DotaApiMatchResult, analysis: Analysis): WhoWon {
     return {
@@ -44,21 +44,30 @@ export class DetermineWhoWon implements Analyzer {
       duration: matchInfo.duration,
       mode: gameModes[matchInfo.game_mode] || "something",
       ranked: matchInfo.lobby_type === 7,
-      players: this.getOurPlayerNames(matchInfo),
+      players: this.getOurPlayerNames(matchInfo.players),
+      goons: this.getGoonNames(matchInfo.players),
       matchId: matchInfo.match_id
     };
   }
 
-  //if we want account names here, we should query the dota api for them on startup and cache the names
-  private getOurPlayerNames(matchInfo: DotaApiMatchResult): string[] {
-    return matchInfo.players.map(p => {
-      for (const account of this.players) {
+  private getNames(playersInMatch: Player[], accountsToFind: Account[]): string[] {
+    return playersInMatch.map(p => {
+      for (const account of accountsToFind) {
         if (account.account_id === p.account_id) {
           return account.name;
         }
       }
       return null;
     }).filter(name => name !== null);
+  }
+
+  //if we want account names here, we should query the dota api for them on startup and cache the names
+  private getOurPlayerNames(players: Player[]): string[] {
+    return this.getNames(players, this.players);
+  }
+
+  private getGoonNames(players: Player[]): string[] {
+    return this.getNames(players, this.goons);
   }
 
   private didWeWin(matchInfo): boolean {

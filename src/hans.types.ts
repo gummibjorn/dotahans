@@ -45,6 +45,7 @@ export declare namespace AnalysisFormat {
     mode: string;
     ranked: boolean;
     players: string[];
+    goons: string[];
     matchId: MatchId;
   }
   interface Excuse {

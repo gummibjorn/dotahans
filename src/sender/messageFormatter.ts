@@ -37,6 +37,15 @@ export const rating = makeFormatter(AnalysisType.RATING, (rating: Rating) => {
   return msg;
 });
 
+function formatGoons(goons: String[]){
+  const count = goons.length;
+  switch(count){
+    case 0: return "";
+    case 1: return " and a goon";
+    default: return ` and ${count} goons`;
+  }
+}
+
 export const whoWon = makeFormatter(AnalysisType.WHOWON, (whoWon: WhoWon) => {
   const durationFormat = duration(whoWon.duration, "seconds").format("hh:mm:ss");
   const wonLost = whoWon.won ? "won" : "lost";
@@ -44,7 +53,7 @@ export const whoWon = makeFormatter(AnalysisType.WHOWON, (whoWon: WhoWon) => {
   const stats = Object.keys(statsPages)
     .map(key => `[${key}](${statsPages[key].replace(":id:", whoWon.matchId)})`)
     .join(" ");
-  return `${whoWon.players.join(", ")} ${wonLost} ${ranked}${whoWon.mode} after ${durationFormat} ${stats}`;
+  return `${whoWon.players.join(", ")}${formatGoons(whoWon.goons)} ${wonLost} ${ranked}${whoWon.mode} after ${durationFormat} ${stats}`;
 });
 
 export const itemStats = makeFormatter(AnalysisType.ITEMSTATS, (itemStats: ItemStats[]) => {

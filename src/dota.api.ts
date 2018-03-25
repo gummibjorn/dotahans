@@ -69,6 +69,7 @@ export class DotaApi {
     return Observable.create(observable => {
       request.get({url: this.MATCH_DETAIL, qs: requestProps}, (err, response, body) => {
         try {
+          console.log("GOT match details for: " + matchId);
           const match = JSON.parse(body).result;
           observable.next(match);
           observable.complete();

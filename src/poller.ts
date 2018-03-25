@@ -6,22 +6,24 @@ import {Redis} from "ioredis";
 import {Observable} from "rxjs/Observable";
 import {DotaApiMatchResult, Match} from "./dota-api";
 import 'rxjs/add/operator/first';
+import {Observer} from "rxjs/Observer";
 
 const redisKey = "poller_matches"
 
 // might use this to handle backoff: https://www.npmjs.com/package/rx-polling
 export function matchStream(dotaApi: DotaApi, accounts: Account[], redis: Redis, pollIntervalSeconds: number) : Observable<DotaApiMatchResult>{
-  function poll(observable) {
+  function poll(observable: Observer<DotaApiMatchResult>) {
     return async function () {
       for (let account of accounts) {
         try {
           console.debug(`Looking up matches for ${account.name}`)
           const match = await dotaApi.getLastMatch(account.account_id).first().toPromise();
           if (!(await redis.sismember(redisKey, match.match_id))) {
-            observable.next(await dotaApi.getMatchDetails(match.match_id));
+            const details = await dotaApi.getMatchDetails(match.match_id).first().toPromise();
+            observable.next(details);
             redis.sadd(redisKey, match.match_id);
           } else {
-            console.debug(`Already saw match ${match.match_id}`)
+            //
           }
         } catch (e) {
           console.warn("Error getting match", e);
@@ -31,7 +33,7 @@ export function matchStream(dotaApi: DotaApi, accounts: Account[], redis: Redis,
   }
 
   if(pollIntervalSeconds === 0){
-    return Observable.create(async observable => {
+    return Observable.create(async (observable: Observer<DotaApiMatchResult>) => {
       await poll(observable)();
       observable.complete();
     });

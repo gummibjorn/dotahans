@@ -61,7 +61,12 @@ function randomElement(items: string[]){
 }
 
 function getHeroName(heroId: number){
-  return heroList.find((hero)=> hero.id === heroId).localized_name;
+  const hero = heroList.find((hero)=> hero.id === heroId)
+  if(hero){
+    return hero.localized_name;
+  } else {
+    return `[[Hero ${heroId}]]`
+  }
 }
 
 

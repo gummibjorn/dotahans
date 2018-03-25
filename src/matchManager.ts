@@ -9,6 +9,7 @@ export class MatchManager {
   startOfMatch = new Subject<DotaApiMatchResult>();
 
   onMatchFinished(match: DotaApiMatchResult) {
+    console.debug("Match finished: " + match.match_id);
     if (!this.matches.has(match.match_id)) {
       this.matches.set(match.match_id, match);
     }

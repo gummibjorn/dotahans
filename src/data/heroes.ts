@@ -559,7 +559,22 @@ const data = {
     "name": "arc_warden",
     "id": 113,
     "localized_name": "Arc Warden"
-  }
+  },
+  {
+    "name": "monkey_king",
+    "id": 114,
+    "localized_name": "Monkey King"
+  },
+  {
+    "name": "willow",
+    "id": 119,
+    "localized_name": "Dark Willow"
+  },
+  {
+    "name": "pangolier",
+    "id": 120,
+    "localized_name": "Pangolier"
+  },
 ]
 }
 

@@ -92,8 +92,8 @@ const cause = [
   "had packet loss",
   "forgot to turn off the lights",
   //franks
-  '"found" %SUBJECT',
-  "solo pushed %SUBJECT",
+  '"found" %SUBJECT%',
+  "solo pushed %SUBJECT%",
   //danis
   "fed Drow",
 ];

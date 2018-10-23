@@ -110,12 +110,12 @@ if(!isDebug){
   console.log("DEV MODE");
   redis.flushall();
 
-  matchStream(dotaApi, config.getPlayers(), redis, 0).subscribe(match => matchManager.onMatchFinished(match) );
-  //analysisMaker.complete.subscribe(analysis => console.log(format(analysis)), console.error);
-  // dotaApi.getMatchDetails(3793324870).subscribe(match => {
-  //   console.log("GOT THE MATCH");
-  //   matchManager.onMatchFinished(match);
-  // });
+  // matchStream(dotaApi, config.getPlayers(), redis, 0).subscribe(match => matchManager.onMatchFinished(match) );
+  analysisMaker.complete.subscribe(analysis => console.log(format(analysis)), console.error);
+  dotaApi.getMatchDetails(4179774334 ).subscribe(match => {
+    console.log("GOT THE MATCH");
+    matchManager.onMatchFinished(match);
+  });
 
 }
 
@@ -141,7 +141,7 @@ app.get("/", dashboard.index);
 /**
  * API examples routes.
  */
-app.get("/excuse", apiController.excuse);
+app.get("/excuse", apiController.excuse(dotaApi));
 
 app.get(`/check/:id`, (req, res) => {
   dotaApi.getMatchDetails(req.params.id).subscribe(match => {

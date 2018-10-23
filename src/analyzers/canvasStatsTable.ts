@@ -1,5 +1,7 @@
 import {createCanvas, loadImage} from "canvas";
 import {Account} from "../hans.types";
+import {DotaApi} from "../dota.api";
+import {Hero} from "../dota-api";
 
 interface TablePlayer {
   hero: number;
@@ -37,7 +39,7 @@ export class CanvasTableDrawer {
   private xOffset = 0;
   private yOffset = 0;
 
-  constructor(private winner: string, private duration: string, private radiantScore: number, private direScore: number,
+  constructor(private heroList: Hero[], private winner: string, private duration: string, private radiantScore: number, private direScore: number,
               private radiant_win: boolean, private knownPlayers: Account[]) {
   }
 
@@ -49,8 +51,7 @@ export class CanvasTableDrawer {
     const canvas = createCanvas(width, 10 * line_height + header_height);
     const ctx = canvas.getContext("2d");
     //load hero images before drawing
-    const promises = [];
-    this.players.forEach(p => promises.push(loadImage(`img/hero${p.hero}.png`)));
+    const promises = this.players.map(p => this.heroImage(p.hero));
 
     return Promise.all(promises).then(
       images => {
@@ -61,6 +62,17 @@ export class CanvasTableDrawer {
         return canvas;
       }
     );
+  }
+
+  async heroImage(heroId: number){
+    const hero = this.heroList.find(h => h.id === heroId);
+    if(hero){
+      const name = hero.name.replace('npc_dota_hero_', '');
+      return loadImage(`https://api.opendota.com/apps/dota2/images/heroes/${name}_full.png`)
+    } else {
+      //TODO get a proper placeholder image here
+      return loadImage('img/hero1.png');
+    }
   }
 
   getWinnerColor(): string {

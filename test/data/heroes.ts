@@ -1,5 +1,6 @@
-const data = {
-  "heroes": [
+import {Hero} from "../../src/dota-api";
+
+export const heroes: Hero[] = [
   {
     "name": "antimage",
     "id": 1,
@@ -576,6 +577,3 @@ const data = {
     "localized_name": "Pangolier"
   },
 ]
-}
-
-export const heroes = data.heroes;

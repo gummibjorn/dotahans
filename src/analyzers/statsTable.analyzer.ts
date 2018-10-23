@@ -6,14 +6,15 @@ import * as moment from "moment";
 import "moment-duration-format";
 import {Analysis} from "../analysis";
 import WhoWon = AnalysisFormat.WhoWon;
+import {DotaApi} from "../dota.api";
 
 export class StatsTable implements AsyncAnalyzer {
   analysisType = AnalysisType.STATSTABLE;
 
-  constructor(private knownPlayers: Account[]) {
+  constructor(private dotaApi: DotaApi, private knownPlayers: Account[]) {
   }
 
-  analyze(matchInfo: DotaApiMatchResult, analysis: Analysis): Promise<any> {
+  async analyze(matchInfo: DotaApiMatchResult, analysis: Analysis): Promise<any> {
     if (!this.didDependantAnalyzersRun(analysis) || this.didIRun(analysis)) {
       return undefined;
     }
@@ -25,7 +26,8 @@ export class StatsTable implements AsyncAnalyzer {
 
     const winMessage = didWeWin ? "Mir händ gwunne" : "Ufs Dach becho";
 
-    const drawer = new CanvasTableDrawer(winMessage, duration, matchInfo.radiant_score, matchInfo.dire_score, matchInfo.radiant_win, this.knownPlayers);
+    const heroList = await this.dotaApi.getHeroes().toPromise();
+    const drawer = new CanvasTableDrawer(heroList, winMessage, duration, matchInfo.radiant_score, matchInfo.dire_score, matchInfo.radiant_win, this.knownPlayers);
 
     matchInfo.players.forEach(p => {
       drawer.addPlayer(

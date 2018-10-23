@@ -79,23 +79,21 @@ export class AnalysisMaker {
   }
 
   private asyncAnalyzers: AsyncAnalyzer[] = [
+    new ExcuseGeneratorAnalyzer(this.dotaApi),
     new PlayerSummaryResolver(this.dotaApi),
-    new StatsTable(this.config.getPlayers()),
+    new StatsTable(this.dotaApi, this.config.getPlayers()),
   ];
 
   private syncAnalyzers: Analyzer[] = [
     new DetermineWhoWon(this.config.getPlayers(), this.config.getGoons()),
-    new ExcuseGeneratorAnalyzer()
   ];
 
   private runAsyncAnalyzers(match: DotaApiMatchResult, analysis: Analysis) {
-    this.asyncAnalyzers.forEach(analyzer => {
-      const asyncResult = analyzer.analyze(match, analysis);
+    this.asyncAnalyzers.forEach(async analyzer => {
+      const asyncResult = await analyzer.analyze(match, analysis);
       if (asyncResult) {
-        asyncResult.then(result => {
-          analysis.setPart(analyzer.analysisType, result);
-          this.complete.next(analysis);
-        });
+        analysis.setPart(analyzer.analysisType, asyncResult);
+        this.complete.next(analysis);
       }
     });
   }

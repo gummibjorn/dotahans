@@ -1,9 +1,9 @@
-import {AnalysisFormat, AnalysisType, Analyzer} from "../hans.types";
-import {DotaApiMatchResult, Player} from "../dota-api";
+import {AnalysisFormat, AnalysisType, Analyzer, AsyncAnalyzer} from "../hans.types";
+import {DotaApiMatchResult, Hero, Player} from "../dota-api";
 import {Analysis} from "../analysis";
 import Excuse = AnalysisFormat.Excuse;
-import {heroes as heroList} from '../data/heroes';
 import WhoWon = AnalysisFormat.WhoWon;
+import {DotaApi} from "../dota.api";
 
 function both(s){
   return [`our ${s}`, `their ${s}`];
@@ -103,25 +103,37 @@ function randomElement(items: string[]){
   return items[Math.floor(Math.random()*items.length)];
 }
 
-function getHeroName(heroId: number){
-  const hero = heroList.find((hero)=> hero.id === heroId)
-  if(hero){
-    return hero.localized_name;
-  } else {
-    return `[[Hero ${heroId}]]`
-  }
-}
 
 
-export class ExcuseGeneratorAnalyzer implements Analyzer {
+export class ExcuseGeneratorAnalyzer implements AsyncAnalyzer {
   analysisType = AnalysisType.EXCUSE;
 
+  constructor(private dotaApi: DotaApi){}
 
-  analyze(matchInfo: DotaApiMatchResult, analysis: Analysis): Excuse {
+
+  async analyze(matchInfo: DotaApiMatchResult, analysis: Analysis): Promise<Excuse> {
+    if(this.didIRun(analysis)){
+      return undefined;
+    }
+
+    const heroList = await this.dotaApi.getHeroes().toPromise();
     const whowon = analysis.get(AnalysisType.WHOWON) as WhoWon;
-    const heroes = matchInfo.players.map(p => getHeroName(p.hero_id));
+    const heroes = matchInfo.players.map(p => (this.getHeroName(heroList, p.hero_id)));
     const generator = new ExcuseGenerator(heroes, whowon.players);
     return {excuse: whowon.won ? "" : generator.randomExcuse()};
+  }
+
+  getHeroName(heroList: Hero[], heroId: number){
+    const hero = heroList.find((hero)=> hero.id === heroId)
+    if(hero){
+      return hero.localized_name;
+    } else {
+      return `[[Hero ${heroId}]]`
+    }
+  }
+
+  private didIRun(analysis: Analysis): boolean {
+    return analysis.get(this.analysisType);
   }
 
 }

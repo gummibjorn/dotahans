@@ -1,10 +1,11 @@
 import {} from "jest";
 import {CanvasTableDrawer} from "../src/analyzers/canvasStatsTable";
 import * as fs from "fs";
+import {heroes} from "./data/heroes";
 
 describe("Canvas Stats Table", () => {
   it("should be drawn", (done) => {
-    const drawer = new CanvasTableDrawer("Mir händ gwunne", "12:12", 10, 24, true, [{account_id: 1, name: "Peter"}]);
+    const drawer = new CanvasTableDrawer(heroes, "Mir händ gwunne", "12:12", 10, 24, true, [{account_id: 1, name: "Peter"}]);
     drawer.addPlayer({hero: 1, kills: 5, deaths: 3, assists: 17, level: 25, name: "Hans"});
     drawer.addPlayer({hero: 2, kills: 8, deaths: 14, assists: 3, level: 22, name: "Peter"});
     drawer.addPlayer({hero: 4, kills: 19, deaths: 0, assists: 2, level: 21, name: "Gurken"});

@@ -8,8 +8,6 @@ your Dota2 experience together with your friends.
 * Messaging(Telegram for now) for started/ended matches
 * Exclusive match analysis
 * Dashboard for ongoing matches
-* "ready-check" in Telegram Messenger
-
 
 Node application written in TypeScript. 
 
@@ -17,7 +15,13 @@ Node application written in TypeScript.
 
 `npm install`
 
-`npm start`
+```
+docker run -d -p 6379:6379 redis
+npm start
+
+# or, if nodemon is acting up, the ugly manual way you run each change:
+rm -r dist && npm run build && node dist/server.js
+```
 
 ## Test
 

@@ -66,13 +66,18 @@ export class CanvasTableDrawer {
 
   async heroImage(heroId: number){
     const hero = this.heroList.find(h => h.id === heroId);
+
     if(hero){
       const name = hero.name.replace('npc_dota_hero_', '');
-      return loadImage(`https://api.opendota.com/apps/dota2/images/heroes/${name}_full.png`)
-    } else {
-      //TODO get a proper placeholder image here
-      return loadImage('img/hero1.png');
+      const url = `http://cdn.dota2.com/apps/dota2/images/heroes/${name}_full.png`;
+      try{
+        return await loadImage(url)
+      } catch (e) {
+        console.error(`Could not load hero image for ${url}`, e)
+      }
     }
+    //TODO get a proper placeholder image here
+    return loadImage('img/hero1.png');
   }
 
   getWinnerColor(): string {

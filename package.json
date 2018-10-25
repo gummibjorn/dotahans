@@ -45,7 +45,7 @@
     "bcrypt-nodejs": "^0.0.3",
     "bignumber.js": "^4.1.0",
     "body-parser": "^1.15.2",
-    "canvas": "^2.0.0-alpha.6",
+    "canvas": "^2.0.1",
     "compression": "^1.6.2",
     "connect-mongo": "^1.3.2",
     "dotenv": "^2.0.0",
